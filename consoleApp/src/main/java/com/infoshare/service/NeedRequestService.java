@@ -1,5 +1,6 @@
 package com.infoshare.service;
 
+import com.infoshare.database.FileDb;
 import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.PersonInNeed;
@@ -7,6 +8,7 @@ import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.util.Util;
 import com.infoshare.util.ValidatorEnum;
 
+import java.io.IOException;
 import java.util.Date;
 
 public class NeedRequestService {
@@ -15,6 +17,13 @@ public class NeedRequestService {
         PersonInNeed personInNeed=createPersonInNeed();
         TypeOfHelp typeOfHelp= Util.createTypeOfHelp();
         NeedRequest needRequest=new NeedRequest(typeOfHelp, HelpStatuses.NEW,new Date(),personInNeed);
+        FileDb fileDb= new FileDb();
+        try {
+            fileDb.saveNeedRequest(needRequest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
