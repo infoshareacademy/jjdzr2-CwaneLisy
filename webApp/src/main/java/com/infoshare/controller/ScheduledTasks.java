@@ -19,8 +19,8 @@ public class ScheduledTasks {
 
     @Scheduled(cron = "*/30 * * * * *")
     public void updateRequests(){
-        log.info("Start refresh request status task");
+        log.debug("Start refresh request status task");
         needRequestService.restoreStatusForExpiredRequests();
-        log.info("Refresh status task done");
+        log.debug("Refresh status task done");
     }
 }

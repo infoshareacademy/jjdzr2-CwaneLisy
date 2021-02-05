@@ -4,6 +4,8 @@ import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.util.ValidatorEnum;
 import com.infoshare.validator.RegExpPattern;
 
+import java.util.UUID;
+
 public class NeedRequestForm {
     @RegExpPattern(regexp = ValidatorEnum.POLISHSIGNS)
     private String name;
@@ -12,6 +14,16 @@ public class NeedRequestForm {
     @RegExpPattern(regexp = ValidatorEnum.PHONENUMBER)
     private String phone;
     private TypeOfHelp typeOfHelp;
+    private UUID uuid;
+
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
     public String getName() {
         return name;

@@ -8,65 +8,21 @@
     <title th:text="#{needRequestForm.pageTitle}"></title>
 </head>
 <body class="body-background">
-<div class="container-fluid h-100">
+<header>
+    <div th:replace="WebInterface.html ::navbar"></div>
+</header>
+<div class="container-fluid h-100 navbarSpacing" >
+
     <div class="row justify-content-center mt-5 h-100">
         <div class="col fluidBox">
 
-            <div class="card has-shadow">
+            <div class="card has-shadow ">
                 <div class="card-header"><span class="text-light" th:text="#{needRequestForm.legend}"/></div>
-                <div class="card-body">
-                    <form class="w-100" action="#" method="post" th:object="${needRequestForm}"
-                          th:action="@{/need-request/submit-new-form}">
-                        <div class="form-group row mb-sm-3">
-                            <label class="col-sm-4 col-form-label " th:text="#{needRequestForm.name}"></label>
-                            <div class="col-sm-8">
-                                <div class="input-group">
-                                    <input type="text" th:field="*{name}" class="form-control"/>
-                                    <span class="errorClass" th:if="${#fields.hasErrors('name')}"
-                                          th:errors="*{name}"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row mb-sm-3">
-                            <label class="col-sm-4 col-form-label" th:text="#{basicForm.location}"></label>
-                            <div class="col-sm-8">
-                                <div class="input-group">
-                                    <input type="text" th:field="*{location}" class="form-control"/>
-                                    <span class="errorClass" th:if="${#fields.hasErrors('location')}"
-                                          th:errors="*{location}"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row mb-sm-3">
-                            <label class="col-sm-4 col-form-label" th:text="#{basicForm.phone}"></label>
-                            <div class="col-sm-8">
-                                <div class="input-group">
-                                    <input type="text" th:field="*{phone}" class="form-control"/>
-                                    <span class="errorClass" th:if="${#fields.hasErrors('phone')}"
-                                          th:errors="*{phone}"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group row mb-sm-3">
-                            <label class="col-sm-4 col-form-label" th:text="#{basicForm.typeOfHelp}"></label>
-                            <div class="col-sm-8">
-                                <select class="custom-select" th:field="*{typeOfHelp}">
-                                    <option th:each="element: ${types}" th:value="${element}"
-                                            th:text="${element.type}"/>
-                                </select><br/>
-
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                        <button class="btn btn-success" type="submit" th:text="#{basicForm.submit}"></button>
-                        </div>
-                    </form>
+                <div class="card-body" th:insert="/fragments/edit-form-fragment.html :: edit-form">
                 </div>
             </div>
-
         </div>
     </div>
-
 </div>
 <script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
 <script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.js}"></script>
