@@ -50,7 +50,7 @@ public class NeedRequestController {
             model.addAttribute("needRequestsList", getAllNeedRequests());
             return "need-request-list";
         } else {
-            needRequestService.createNeedRequest(needRequestForm.getName(),
+            needRequestService.updateNeedRequest(needRequestForm.getName(),
                     needRequestForm.getLocation(),
                     needRequestForm.getPhone(), needRequestForm.getTypeOfHelp(), needRequestForm.getUuid());
             return "redirect:/need-request/all";

@@ -24,29 +24,24 @@ public class NeedRequestService {
         this.db = db;
     }
 
-    public void createNeedRequest(String name, String location, String phone, TypeOfHelp typeOfHelp, UUID uuid) {
-        PersonInNeed personInNeed = new PersonInNeed(name, location, phone);
-        NeedRequest needRequest;
-        if (null == uuid) {
-            needRequest = NeedRequest
-                    .create(typeOfHelp, personInNeed);
+    public void updateNeedRequest(String name, String location, String phone, TypeOfHelp typeOfHelp, UUID uuid) {
+        Optional<NeedRequest> needRequestOptional = db.getNeedRequests().stream()
+                .filter(needRequest1 -> needRequest1.getUuid().equals(uuid))
+                .findAny();
+        if (needRequestOptional.isPresent()) {
+            NeedRequest needRequest = needRequestOptional.get();
+            needRequest.getPersonInNeed().setLocation(location);
+            needRequest.getPersonInNeed().setName(name);
+            needRequest.getPersonInNeed().setPhone(phone);
+            needRequest.setTypeOfHelp(typeOfHelp);
             db.saveNeedRequest(needRequest);
-        } else {
-            Optional<NeedRequest> needRequestOptional = db.getNeedRequests().stream()
-                    .filter(needRequest1 -> needRequest1.getUuid().equals(uuid))
-                    .findAny();
-            if (needRequestOptional.isPresent()) {
-                needRequest = needRequestOptional.get();
-                needRequest.setPersonInNeed(personInNeed);
-                needRequest.setTypeOfHelp(typeOfHelp);
-                db.saveNeedRequest(needRequest);
-            }
         }
-
     }
 
     public void createNeedRequest(String name, String location, String phone, TypeOfHelp typeOfHelp) {
-        createNeedRequest(name, location, phone, typeOfHelp, null);
+        PersonInNeed personInNeed = new PersonInNeed(name, location, phone);
+        NeedRequest needRequest = NeedRequest.create(typeOfHelp, personInNeed);
+        db.saveNeedRequest(needRequest);
     }
 
     public void changeRequestStatus(List<NeedRequest> filteredList, int choice) {
