@@ -1,5 +1,6 @@
 package com.infoshare.controller;
 
+import com.infoshare.domain.NeedRequest;
 import com.infoshare.formobjects.NeedRequestForm;
 import com.infoshare.formobjects.NeedRequestListObject;
 import com.infoshare.formobjects.NeedRequestSearchForm;
