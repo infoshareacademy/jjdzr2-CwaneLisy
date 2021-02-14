@@ -1,10 +1,10 @@
 package com.infoshare.controller;
 
-import com.infoshare.domain.NeedRequest;
 import com.infoshare.formobjects.NeedRequestForm;
+import com.infoshare.formobjects.NeedRequestSearchForm;
+import com.infoshare.formobjects.VolunteerSearchForm;
 import com.infoshare.service.NeedRequestService;
 
-import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("need-request")
@@ -53,7 +52,20 @@ public class NeedRequestController {
 
     @GetMapping("/search")
     public String searchForNeedRequest(Model model) {
-        return getTestViewWithPageUnderConstructionMessage(model);
+        model.addAttribute("needRequestSearchForm",new VolunteerSearchForm());
+        return "need-request-search-form";
+    }
+
+    @PostMapping("/search/result")
+    public String resultOfSearchForNeedRequest(@Valid @ModelAttribute("needRequestSearchForm") NeedRequestSearchForm needRequestSearchForm,
+                                             BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "need-request-search-form";
+        }
+        model.addAttribute("needRequests",needRequestService.getNeedRequestFilteredList(
+                needRequestSearchForm.getCity(),
+                needRequestSearchForm.getTypeOfHelp()));
+        return "need-request-search-results";
     }
 
     @GetMapping("/edit")

@@ -1,3 +1,4 @@
+ <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="pl">
 <head>
     <meta charset="utf-8"/>
@@ -10,35 +11,30 @@
 <body>
 <div class="container">
     <div class="d-inline bg-success">
-        <h3 class="text-center">Dostępni wolontariusze</h3>
+        <h3 class="text-center">Osoby potrzebujące:</h3>
     </div>
 
     <td>
-        <span th:if="${volunteers.size() == 0}">Niestety, dla podanych kryteriów nie ma obecnie wolnych wolontariuszy. Spróbuj później.</span>
-        <span th:unless="${volunteers.size() == 0}">
-
+        <span th:if="${needRequests.size() == 0}">Dla podanych kryteriów nie ma obecnie osób potrzebujących.</span>
+        <span th:unless="${needRequests.size() == 0}">
              <table class="table">
         <thead>
         <tr>
             <th scope="col">Imię</th>
             <th scope="col">Miasto</th>
             <th scope="col">Numer telefonu</th>
-            <th scope="col">E-mail</th>
             <th scope="col">Rodzaj pomocy</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="volunteer : ${volunteers}">
-            <td th:text="${volunteer.getName()}"></td>
-            <td th:text="${volunteer.getLocation()}"></td>
-            <td th:text="${volunteer.getPhone()}"></td>
-            <td th:text="${volunteer.getEmail()}"></td>
-            <td th:text="${volunteer.getTypeOfHelp().getType()}"></td>
+        <tr th:each="needRequest : ${needRequests}">
+            <td th:text="${needRequest.getPersonInNeed().getName()}"></td>
+            <td th:text="${needRequest.getPersonInNeed().getLocation()}"></td>
+            <td th:text="${needRequest.getPersonInNeed().getPhone()}"></td>
+            <td th:text="${needRequest.getTypeOfHelp().getType()}"></td>
         </tr>
         </tbody>
     </table>
-
-
         </span>
     </td>
 
