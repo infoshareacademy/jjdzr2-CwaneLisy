@@ -1,3 +1,11 @@
+.body-clouds {
+    background: url("https://image.freepik.com/free-vector/watercolor-background_87374-69.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 .errorClass {
     width: 100%;
     float: right;
@@ -5,6 +13,9 @@
     color: red;
     font-size: 0.75em;
     padding-right: 5px;
+}
+.navbarSpacing{
+    margin-top: 80px;
 }
 .custom-select,
 .input-group .form-control{
@@ -21,7 +32,9 @@ form {
     overflow: hidden;
     width: 470px;
 }
-
+.custom-select {
+    font-size: 0.9em;
+}
 label {
     float: left;
     width: 200px;
@@ -35,7 +48,7 @@ input,select{
     margin-top: 10px;
 }
 
-button {
+.button-custom {
 
     width: 200px;
     margin-top: 20px;
@@ -46,14 +59,18 @@ button {
 }
 
 .fluidBox{
-    max-width: 600px;
+    max-width: 500px;
     margin-left: auto;
     margin-right: auto;
 }
 .fluidBox .card{
     border: 0px;
 }
-
+.modal-header,
+.card .card-header {
+    background-color: darkolivegreen;
+}
+.modal-body .form-group,
 .card-body .form-group {
     margin-bottom: 0px;
 }
@@ -69,7 +86,7 @@ body{
 }
 
 
-.need-request .row {
+.need-request > .row {
     margin: 0;
     padding: 15px 0;
     margin-bottom: 15px
@@ -148,14 +165,17 @@ body{
 .need-request a.header-link {
     text-decoration: none;
 }
+.need-request span.table-link,
 .need-request a.table-link {
     color: #999;
     margin: 0 5px;
     font-size: 1.125em;
 }
+.need-request span.table-link:hover,
 .need-request a.table-link:hover {
     text-decoration: none;
     color: #2aa493;
+    cursor: pointer;
 }
 .need-request a.table-link.danger {
     color: #fe635f;
@@ -186,6 +206,10 @@ body{
 }
 
 @media (max-width: 480px) {
+    .need-request .right-col {
+        margin-top: 20px;
+        margin-left: 0px
+    }
     .need-request .need-request-progress {
         display: none
     }

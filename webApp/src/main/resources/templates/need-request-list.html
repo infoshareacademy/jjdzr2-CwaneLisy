@@ -6,12 +6,16 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.6.0/css/bootstrap.css}">
     <link th:href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
     <link rel="stylesheet" th:href="@{../formStyle.css}">
+    <script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
 
 </head>
 <body class="body-background">
-
-<section class="no-padding-top">
+<header>
+    <div th:replace="WebInterface.html ::navbar"></div>
+</header>
+<section class="navbarSpacing">
     <div class="container">
+
         <div class="need-request">
             <div class="row bg-white border-rounded has-shadow d-flex justify-content-center align-items-center">
                 <div class="text">
@@ -19,15 +23,15 @@
                 </div>
             </div>
         </div>
-        <div class="need-request" th:each="needRequest: ${nr}">
+        <div class="need-request" th:each="needRequest: ${needRequestsList}">
             <div class="row bg-white border-rounded has-shadow leftBorder">
                 <div class="left-col col-lg-6 d-flex align-items-center justify-content-between">
                     <div class="need-request-title d-flex align-items-center">
                         <div class="text">
                             <a th:href="@{/need-request/view/{id}(id=${needRequest.uuid})}" class="header-link">
-                                <h3 class="h4" th:text="${needRequest.personInNeed.name}"></h3>
+                                <h3 class="h4" th:text="${needRequest.name}"></h3>
                             </a>
-                            <small th:text="${needRequest.personInNeed.location}"></small>
+                            <small th:text="${needRequest.location}"></small>
                         </div>
                     </div>
                     <div class="need-request-date d-flex align-items-center justify-content-end">
@@ -72,13 +76,38 @@
 										<i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
 									</span>
                         </a>
-                        <a th:href="@{/need-request/edit/{id}(id=${needRequest.uuid})}" class="table-link"
-                           data-toggle="tooltip" data-placement="top" th:title="#{tooltip.edit}">
-									<span class="fa-stack">
+                        <span class="table-link"
+                              data-toggle="tooltip" data-placement="top" th:title="#{tooltip.edit}">
+									<span class="fa-stack" data-toggle="modal" data-target="#myModal"
+                                          th:attrappend="data-target=${needRequest.uuid}">
 										<i class="fa fa-square fa-stack-2x"></i>
 										<i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
 									</span>
-                        </a>
+                        </span>
+                        <div class="modal fade" id="myModal" role="dialog" th:attrappend="id=${needRequest.uuid}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <span class="text-light" th:text="#{needRequestForm.legend}"/>
+                                        <a class="text-light" href="#" data-dismiss="modal">
+                                            <i class="fa fa-times" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                    <div class="modal-body" th:insert="/fragments/edit-form-fragment.html :: edit-form">
+                                    </div>
+                                    <script th:inline="javascript"
+                                            th:if="${hasErrors==true && needRequest.uuid==request.uuid}">
+                                        jQuery(function ($) {
+                                            $(document).ready(function () {
+                                                var uuid = /*[[${request.uuid}]]*/
+                                                    $("#myModal".concat(uuid)).modal("show");
+                                            });
+                                        });
+                                    </script>
+                                </div>
+
+                            </div>
+                        </div>
                         <a th:href="@{/need-request/delete/{id}(id=${needRequest.uuid})}" class="table-link danger"
                            data-toggle="tooltip" data-placement="top" th:title="#{tooltip.delete}">
 									<span class="fa-stack">
@@ -92,7 +121,7 @@
         </div>
     </div>
 </section>
-<script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
+
 <script th:src="@{/webjars/font-awesome/4.7.0/js/all.min.js}" rel="script"></script>
 <script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.bundle.min.js}"></script>
 <script type="text/javascript">

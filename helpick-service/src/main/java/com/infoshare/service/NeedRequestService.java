@@ -5,18 +5,13 @@ import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.PersonInNeed;
 import com.infoshare.domain.TypeOfHelp;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -29,42 +24,59 @@ public class NeedRequestService {
         this.db = db;
     }
 
+    public void updateNeedRequest(String name, String location, String phone, TypeOfHelp typeOfHelp, UUID uuid) {
+        Optional<NeedRequest> needRequestOptional = db.getNeedRequests().stream()
+                .filter(needRequest1 -> needRequest1.getUuid().equals(uuid))
+                .findAny();
+        if (needRequestOptional.isPresent()) {
+            NeedRequest needRequest = needRequestOptional.get();
+            needRequest.getPersonInNeed().setLocation(location);
+            needRequest.getPersonInNeed().setName(name);
+            needRequest.getPersonInNeed().setPhone(phone);
+            needRequest.setTypeOfHelp(typeOfHelp);
+            db.saveNeedRequest(needRequest);
+        }
+    }
+
     public void createNeedRequest(String name, String location, String phone, TypeOfHelp typeOfHelp) {
         PersonInNeed personInNeed = new PersonInNeed(name, location, phone);
-        NeedRequest needRequest = NeedRequest
-                .create(typeOfHelp, personInNeed);
+        NeedRequest needRequest = NeedRequest.create(typeOfHelp, personInNeed);
         db.saveNeedRequest(needRequest);
     }
 
     public void changeRequestStatus(List<NeedRequest> filteredList, int choice) {
-            List<NeedRequest> activeNeedRequests = db.getNeedRequests();
-            NeedRequest changedRequest = filteredList.get(choice-1);
-            changedRequest.setHelpStatus(HelpStatuses.INPROGRESS);
-            changedRequest.setStatusChange(new Date());
-            for (int i = 0; i < activeNeedRequests.size(); i++) {
-                if (activeNeedRequests.get(i).getUuid().equals(changedRequest.getUuid())) {
-                    activeNeedRequests.set(i, changedRequest);
-                }
+        List<NeedRequest> activeNeedRequests = db.getNeedRequests();
+        NeedRequest changedRequest = filteredList.get(choice - 1);
+        changedRequest.setHelpStatus(HelpStatuses.INPROGRESS);
+        changedRequest.setStatusChange(new Date());
+        for (int i = 0; i < activeNeedRequests.size(); i++) {
+            if (activeNeedRequests.get(i).getUuid().equals(changedRequest.getUuid())) {
+                activeNeedRequests.set(i, changedRequest);
             }
+        }
         db.saveUpdatedNeedRequest(activeNeedRequests);
     }
 
     public void restoreStatusForExpiredRequests() {
-            List<NeedRequest> activeNeedRequests = db.getNeedRequests();
-            for (NeedRequest request : activeNeedRequests) {
-                Date time1 = request.getStatusChange();
-                Date actualTime = new Date();
-                long diff = actualTime.getTime() - time1.getTime();
-                long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
-                if (request.getHelpStatus().equals(HelpStatuses.INPROGRESS) &&
-                        minutes > 1440) {
-                    log.info("Found difference > 24h in request " + request.getUuid() + ", changing status...");
-                    request.setHelpStatus(HelpStatuses.NEW);
-                    request.setStatusChange(new Date());
-                    log.info("Status of request ID " + request.getUuid() + " restored to NEW");
-                }
+        boolean hasListChanged = false;
+        List<NeedRequest> activeNeedRequests = db.getNeedRequests();
+        for (NeedRequest request : activeNeedRequests) {
+            Date time1 = request.getStatusChange();
+            Date actualTime = new Date();
+            long diff = actualTime.getTime() - time1.getTime();
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+            if (request.getHelpStatus().equals(HelpStatuses.INPROGRESS) &&
+                    minutes > 1440) {
+                hasListChanged = true;
+                log.info("Found difference > 24h in request " + request.getUuid() + ", changing status...");
+                request.setHelpStatus(HelpStatuses.NEW);
+                request.setStatusChange(new Date());
+                log.info("Status of request ID " + request.getUuid() + " restored to NEW");
             }
-        db.saveUpdatedNeedRequest(activeNeedRequests);
+        }
+        if (hasListChanged) {
+            db.saveUpdatedNeedRequest(activeNeedRequests);
+        }
     }
 
     public List<NeedRequest> getNeedRequestFilteredList(String city, TypeOfHelp typeOfHelp) {
