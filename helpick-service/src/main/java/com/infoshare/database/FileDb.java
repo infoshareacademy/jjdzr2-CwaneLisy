@@ -194,14 +194,6 @@ public class FileDb implements DB {
                 .findFirst();
     }
 
-    @Override
-    public void deleteVolunteer(String email)
-    {
-        List<Volunteer> volunteers = getVolunteers();
-        volunteers = volunteers.stream().filter(v -> !v.getEmail().equalsIgnoreCase(email)).collect(Collectors.toList());
-        saveVolunteers(volunteers);
-    }
-
     private void saveVolunteers(List<Volunteer> volunteers)
     {
         try {
@@ -220,5 +212,4 @@ public class FileDb implements DB {
             e.printStackTrace();
         }
     }
-
 }

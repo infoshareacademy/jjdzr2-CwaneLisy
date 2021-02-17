@@ -1,29 +1,39 @@
 package com.infoshare.service;
 
 import com.infoshare.database.DB;
-import com.infoshare.database.FileDb;
 import com.infoshare.domain.TypeOfHelp;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.infoshare.domain.Volunteer;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
 
 class VolunteerServiceTest {
 
-    private final DB db = new FileDb();
+    private final DB db = mock(DB.class);
     private final VolunteerService volunteerService = new VolunteerService(db);
 
     @Test
     public void ifNewVolunteerRegisteredForValidInput() {
-        assertTrue(volunteerService.registerNewVolunteer("Janko", "Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true));
-        db.deleteVolunteer("janko@gmail.com");
-    }
+        //Given & when
+        boolean isNewVolunteerRegistered = volunteerService.registerNewVolunteer("Anna", "Warszawa", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true);
+        //Then
+        assertThat(isNewVolunteerRegistered).isTrue();
+        }
 
     @Test
     public void ifNewVolunteerRegisteredWithEmailAlreadyUsedInDb(){
-        assertTrue(volunteerService.registerNewVolunteer("Janko", "Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true));
-        assertFalse(volunteerService.registerNewVolunteer("Anna", "Warszawa", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true));
-        db.deleteVolunteer("janko@gmail.com");
+        //Given
+        Volunteer volunteerInDb = new Volunteer( "Janko","Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true, UUID.randomUUID());
+        when(db.getVolunteer("janko@gmail.com")).thenReturn(volunteerInDb);
+        //When
+        boolean isNewVolunteerRegistered = volunteerService.registerNewVolunteer("Anna", "Warszawa", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true);
+        //Then
+        assertThat(isNewVolunteerRegistered).isFalse();
     }
 
 }

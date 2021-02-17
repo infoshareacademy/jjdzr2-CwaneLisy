@@ -24,6 +24,4 @@ public interface DB {
     Volunteer getVolunteer(String email);
 
     Optional<Volunteer> getVolunteer(UUID uuid);
-
-    void deleteVolunteer(String email);
 }
