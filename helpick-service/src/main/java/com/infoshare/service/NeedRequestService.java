@@ -100,4 +100,8 @@ public class NeedRequestService {
     public List<TypeOfHelp> getTypesOfHelp() {
         return Arrays.asList(TypeOfHelp.values());
     }
+
+    public List<HelpStatuses> getHelpStatuses() {
+        return Arrays.asList(HelpStatuses.values());
+    }
 }

@@ -1,52 +1,52 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
-<link rel="stylesheet" id="bootstrap-css">
-
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout(~{::title}, ~{::section})">
 <head>
-    <link rel="stylesheet" th:href="@{/static/formStyle.css}">
-    <meta charset="UTF-8">
-    <title>Helpick</title>
-
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">Znajdź wolontariusza</div>
+    <title th:text="#{volunteerSearchForm.pageTitle}"></title>
+</head>
+<body>
+<section>
+    <div class="container-fluid h-100 navbarSpacing">
+        <div class="row justify-content-center mt-5 h-100">
+            <div class="col fluidBox">
+                <div class="card has-shadow">
+                    <div class="card-header"><span class="text-light" th:text="#{volunteerSearchForm.header}"></span></div>
                     <div class="card-body">
-
-                        <form class="form-horizontal" method="post" th:object="${VolunteerSearchForm}"
+                        <form class="form-horizontal w-100" method="post" th:object="${VolunteerSearchForm}"
                               th:action="@{/volunteer/search/result}">
-                            <div class="form-group">
-                                <label for="city"  class="cols-sm-2 control-label">Miasto:</label>
-                                <div class="cols-sm-10">
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-user fa" aria-hidden="true"></i></span>
-                                        <input type="text" th:field="*{city}" class="form-control" name="city" id="city"
-                                               placeholder="Miasto" required="true"/>
-                                        <span class="errorClass" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></span>
-
+                            <div class="form-group row mb-sm-3">
+                                <label class="col-sm-4 col-form-label" th:text="#{basicForm.location}"></label>
+                                <div class="col-sm-8">
+                                    <div class="form-group">
+                                        <input type="text" th:field="*{city}" class="form-control input-md"required="true"/>
+                                        <small class="errorClass" th:if="${#fields.hasErrors('city')}"
+                                               th:errors="*{city}"></small>
                                     </div>
                                 </div>
                             </div>
-                            <label>Jakiego rodzaju pomocy szukasz?</label>
-                            <div>
-                                <select th:class="form-control" id="category" th:field="*{typeOfHelp}" required="true">
-                                    <option th:each="typeOfHelp : ${T(com.infoshare.domain.TypeOfHelp).values()}"
-                                            th:value="${typeOfHelp}" th:text="${typeOfHelp.getType()}">
-                                    </option>
-                                </select>
+                            <div class="form-group row mb-sm-3">
+                                <label class="col-sm-5 col-form-label" th:text="#{volunteerSearchForm.typeOfHelp}"></label>
+                                <div class="col-sm-7">
+                                    <div class="form-group">
+                                        <select th:class="form-control" th:field="*{typeOfHelp}"
+                                                required="true">
+                                            <option th:each="typeOfHelp : ${T(com.infoshare.domain.TypeOfHelp).values()}"
+                                                    th:value="${typeOfHelp}" th:text="${typeOfHelp.getType()}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <p></p>
-                            <div class="form-group ">
-                                <button type="submit" class="btn btn-primary btn-lg btn-block login-button">Search!
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-success" th:text="#{basicForm.search}">
                                 </button>
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
+</section>
+</body>
+</html>

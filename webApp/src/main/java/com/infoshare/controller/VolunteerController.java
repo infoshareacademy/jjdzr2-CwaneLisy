@@ -1,9 +1,9 @@
 package com.infoshare.controller;
 
 import com.infoshare.domain.Volunteer;
-import com.infoshare.formobjects.VolunteerSearchForm;
 import com.infoshare.formobjects.SearchVolunteerForm;
 import com.infoshare.formobjects.VolunteerForm;
+import com.infoshare.formobjects.VolunteerSearchForm;
 import com.infoshare.service.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping("volunteer")
 public class VolunteerController {
 
+    public static final String TYPES = "types";
     private final VolunteerService volunteerService;
 
     @Autowired
@@ -29,14 +29,14 @@ public class VolunteerController {
     @GetMapping("/create")
     public String createVolunteer(Model model) {
         model.addAttribute(new VolunteerForm());
-        model.addAttribute("types", volunteerService.getTypesOfHelp());
+        model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
         return "volunteer-register-form";
     }
 
     @PostMapping("/form-details")
     public String createVolunteerFormDetails(@Valid @ModelAttribute("volunteerForm") VolunteerForm volunteerFrom, BindingResult br, Model model) {
         if (br.hasErrors()) {
-            model.addAttribute("types", volunteerService.getTypesOfHelp());
+            model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
             return "/volunteer-register-form";
         } else {
             volunteerService.registerNewVolunteer(volunteerFrom.getName(), volunteerFrom.getLocation(), volunteerFrom.getEmail(),
@@ -53,7 +53,7 @@ public class VolunteerController {
 
     @GetMapping("/search")
     public String searchForAvailableVolunteers(Model model) {
-        model.addAttribute("VolunteerSearchForm",new VolunteerSearchForm());
+        model.addAttribute("VolunteerSearchForm", new VolunteerSearchForm());
         return "volunteer-search-form";
     }
 
@@ -63,14 +63,14 @@ public class VolunteerController {
         if (bindingResult.hasErrors()) {
             return "volunteer-search-form";
         }
-        model.addAttribute("volunteers",volunteerService.getVolunteerFilteredList(
+        model.addAttribute("volunteers", volunteerService.getVolunteerFilteredList(
                 volunteerSearchForm.getCity(),
                 volunteerSearchForm.getTypeOfHelp()));
         return "volunteer-search-results";
     }
 
     @GetMapping("/search-to-edit")
-    public String searchForVolunteerToEdit(Model model){
+    public String searchForVolunteerToEdit(Model model) {
         model.addAttribute("searchVolunteerForm", new SearchVolunteerForm());
         return "search-volunteer-for-edit-form";
     }
@@ -80,22 +80,22 @@ public class VolunteerController {
         if (br.hasErrors()) {
             return "search-volunteer-for-edit-form";
         } else {
-            return "redirect:/volunteer/edit?email="+searchVolunteerForm.getEmail();
+            return "redirect:/volunteer/edit?email=" + searchVolunteerForm.getEmail();
         }
     }
 
     @GetMapping("/edit")
-    public String editVolunteer(Model model, @RequestParam (value = "email") String email) {
+    public String editVolunteer(Model model, @RequestParam(value = "email") String email) {
         Volunteer volunteerForEdit = volunteerService.searchForVolunteer(email);
         model.addAttribute(new VolunteerForm(volunteerForEdit));
-        model.addAttribute("types", volunteerService.getTypesOfHelp());
+        model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
         return "edited-volunteer-form";
     }
 
     @PostMapping("/submit-edited-form")
     public String submitEditedVolunteerForm(@Valid @ModelAttribute("volunteerForm") VolunteerForm volunteerForm, BindingResult br, Model model) {
         if (br.hasErrors()) {
-            model.addAttribute("types", volunteerService.getTypesOfHelp());
+            model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
             return "edited-volunteer-form";
         } else {
             volunteerService.editVolunteerData(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(), volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable(), volunteerForm.getUuid());

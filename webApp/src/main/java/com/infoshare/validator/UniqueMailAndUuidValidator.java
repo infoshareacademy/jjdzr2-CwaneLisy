@@ -18,7 +18,11 @@ public class UniqueMailAndUuidValidator implements ConstraintValidator<UniqueMai
         Volunteer volunteer = volunteerService.searchForVolunteer(volunteerForm.getEmail());
         if(volunteer == null){
             return true;
+        } else {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
+                    .addPropertyNode("email").addConstraintViolation();
+            return volunteer.getUuid().equals(volunteerForm.getUuid());
         }
-        return volunteer.getUuid().equals(volunteerForm.getUuid());
     }
 }
