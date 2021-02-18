@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class FileDb implements DB {
@@ -85,22 +86,7 @@ public class FileDb implements DB {
         if (isNewVolunteer) {
             allVolunteers.add(volunteer);
         }
-
-        try {
-            try (FileWriter writer = new FileWriter(VOLUNTEER_DB_FILE_NAME, false)) {
-                for (Volunteer v : allVolunteers) {
-                    writer.write(v.getName() + "," +
-                            v.getLocation() + "," +
-                            v.getEmail() + "," +
-                            v.getPhone() + "," +
-                            v.getTypeOfHelp() + "," +
-                            v.isAvailable() + "," +
-                            v.getUuid() + "\n");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        saveVolunteers(allVolunteers);
     }
 
     @Override
@@ -208,4 +194,22 @@ public class FileDb implements DB {
                 .findFirst();
     }
 
+    private void saveVolunteers(List<Volunteer> volunteers)
+    {
+        try {
+            try (FileWriter writer = new FileWriter(VOLUNTEER_DB_FILE_NAME, false)) {
+                for (Volunteer v : volunteers) {
+                    writer.write(v.getName() + "," +
+                            v.getLocation() + "," +
+                            v.getEmail() + "," +
+                            v.getPhone() + "," +
+                            v.getTypeOfHelp() + "," +
+                            v.isAvailable() + "," +
+                            v.getUuid() + "\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
