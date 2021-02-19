@@ -64,5 +64,23 @@ class VolunteerServiceTest {
        verifyNoMoreInteractions(db);
    }
 
+    @Test
+    public void testChangeAvailabilityStatusWhenVolunteerIsNull(){
+        //Given
+        Volunteer nullVolunteer = null;
+        //When
+        boolean isVolunteerStatusUpdated = volunteerService.updateAvailability(nullVolunteer);
+        //Then
+        assertThat(isVolunteerStatusUpdated).isFalse();
+    }
 
+    @Test
+    public void testChangeAvailabilityStatusWhenVolunteerNotNull(){
+        //Given
+        Volunteer volunteer = new Volunteer( "Janko","Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true, UUID.randomUUID());
+        //When
+        boolean isVolunteerStatusUpdated = volunteerService.updateAvailability(volunteer);
+        //Then
+        assertThat(isVolunteerStatusUpdated).isTrue();
+    }
 }
