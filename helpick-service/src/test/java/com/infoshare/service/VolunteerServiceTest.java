@@ -9,6 +9,8 @@ import static org.mockito.Mockito.*;
 
 import com.infoshare.domain.Volunteer;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -17,6 +19,7 @@ class VolunteerServiceTest {
 
     private final DB db = mock(DB.class);
     private final VolunteerService volunteerService = new VolunteerService(db);
+    private final ArgumentCaptor<Volunteer> volunteerArgumentCaptor = ArgumentCaptor.forClass(Volunteer.class);
 
     @Test
     public void ifNewVolunteerRegisteredForValidInput() {
@@ -83,4 +86,33 @@ class VolunteerServiceTest {
         //Then
         assertThat(isVolunteerStatusUpdated).isTrue();
     }
+
+    @Test
+    public void testChangeAvailabilityStatusFromTrueToFalse(){
+        //Given
+        Volunteer volunteer = new Volunteer( "Janko","Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true, UUID.randomUUID());
+        //When
+        boolean isVolunteerStatusUpdated = volunteerService.updateAvailability(volunteer);
+        //Then
+        assertThat(isVolunteerStatusUpdated).isTrue();
+        assertThat(volunteer.isAvailable()).isFalse();
+        Mockito.verify(db).saveVolunteer(volunteerArgumentCaptor.capture());
+        Volunteer volunteerCaptured = volunteerArgumentCaptor.getValue();
+        assertThat(volunteerCaptured).isEqualTo(volunteer);
+    }
+
+    @Test
+    public void testChangeAvailabilityStatusFromFalseToTrue(){
+        //Given
+        Volunteer volunteer = new Volunteer( "Janko","Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, false, UUID.randomUUID());
+        //When
+        boolean isVolunteerStatusUpdated = volunteerService.updateAvailability(volunteer);
+        //Then
+        assertThat(isVolunteerStatusUpdated).isTrue();
+        assertThat(volunteer.isAvailable()).isTrue();
+        Mockito.verify(db).saveVolunteer(volunteerArgumentCaptor.capture());
+        Volunteer volunteerCaptured = volunteerArgumentCaptor.getValue();
+        assertThat(volunteerCaptured).isEqualTo(volunteer);
+    }
+
 }
