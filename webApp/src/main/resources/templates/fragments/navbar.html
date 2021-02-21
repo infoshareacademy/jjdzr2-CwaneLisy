@@ -12,7 +12,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Strona główna</a>
+                <a class="nav-link active" aria-current="page" href="/">Strona główna</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#">Logowanie</a>
@@ -24,7 +24,6 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" th:href="@{/volunteer/create}" href="#">Wolontariusza</a>
-                    <a class="dropdown-item" th:href="@{/need-request/create}" href="#">Osoby potrzebującej pomocy</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -44,7 +43,6 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" th:href="@{/volunteer/search-to-edit}" href="#">Danych wolontariusza</a>
-                    <a class="dropdown-item" th:href="@{/need-request/edit}" href="#" >Zgłoszenia pomocy</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -53,7 +51,6 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" th:href="@{/volunteer/search}" href="#">Wolontariusza</a>
-                    <a class="dropdown-item" th:href="@{/need-request/search}" href="#" >Zgłoszenie pomocy</a>
                 </div>
             </li>
         </ul>

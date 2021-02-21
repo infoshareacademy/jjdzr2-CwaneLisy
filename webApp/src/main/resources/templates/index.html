@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      th:replace="layout :: layout(~{::title}, ~{::section})">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
     <title>Helpick</title>
 </head>
 <body>
-<section class="navbarSpacing">
+<section class="navbarSpacing" layout:fragment="content">
     <p></p>
     <h1>Witamy w Helpick!</h1>
 </section>

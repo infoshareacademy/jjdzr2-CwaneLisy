@@ -22,6 +22,10 @@ public class VolunteerForm {
     private boolean isAvailable;
     private UUID uuid;
 
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
+
     public VolunteerForm() {
     }
 

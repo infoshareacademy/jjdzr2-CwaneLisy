@@ -183,6 +183,7 @@ body{
 .need-request .need-request-progress i {
     margin-right: 5px
 }
+
 .need-request a.header-link {
     color: #999;
 }
@@ -316,11 +317,34 @@ body{
     border-left: 2px solid #4dbd74
 }
 
-.filter-panel,
-.need-request .leftBorder {
+
+.leftBorder {
     border-left: 4px solid darkcyan;
 }
 
 .border-rounded {
     border-radius: 3px;
+}
+
+.breadcrumb {
+    padding: 5px 0px 5px 0px;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.breadcrumb .fa-caret-right {
+    font-size: 30px;
+}
+
+.adder-link{
+    color: darkcyan;
+}
+
+.adder-link:hover{
+    color: darkcyan;
+    text-decoration: none;
+}
+
+.bottom-right {
+    left: unset;
 }

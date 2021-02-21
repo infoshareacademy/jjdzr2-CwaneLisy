@@ -5,10 +5,14 @@ import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.PersonInNeed;
 import com.infoshare.domain.TypeOfHelp;
+import com.infoshare.dto.FilterForm;
+import com.infoshare.dto.NeedRequestListObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -22,6 +26,70 @@ public class NeedRequestService {
     @Autowired
     public NeedRequestService(DB db) {
         this.db = db;
+    }
+
+    private NeedRequestListObject convertToNeedRequestForm(NeedRequest needRequest) {
+        return NeedRequestListObject.NeedRequestListObjectBuilder.aNeedRequestListObject()
+                .withUuid(needRequest.getUuid())
+                .withName(needRequest.getPersonInNeed().getName())
+                .withPhone(needRequest.getPersonInNeed().getPhone())
+                .withLocation(needRequest.getPersonInNeed().getLocation())
+                .withTypeOfHelp(needRequest.getTypeOfHelp())
+                .withStatusChange(needRequest.getStatusChange())
+                .withHelpStatus(needRequest.getHelpStatus())
+                .build();
+    }
+
+    private boolean filterHelpStatus(FilterForm filterForm, NeedRequest needRequest) {
+        return (filterForm.getHelpStatuses() == null ||
+                filterForm.getHelpStatuses().isEmpty()) || filterForm.getHelpStatuses().stream()
+                .anyMatch(helpStatuses -> needRequest.getHelpStatus().equals(helpStatuses));
+    }
+
+    private boolean filterTypeOfHelp(FilterForm filterForm, NeedRequest needRequest) {
+        return (filterForm.getTypeOfHelps() == null || filterForm.getTypeOfHelps().isEmpty()) || filterForm.getTypeOfHelps().stream()
+                .anyMatch(typeOfHelp -> needRequest.getTypeOfHelp().equals(typeOfHelp));
+    }
+
+    private boolean filterDates(FilterForm filterForm, NeedRequest needRequest) {
+        boolean isFilterStartDateBeforeNeedRequestDate = (filterForm.getStartDate() == null) ||
+                filterForm.getStartDate().isBefore(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
+                filterForm.getStartDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
+        boolean isFilterEndDateAfterNeedRequestDate = (filterForm.getEndDate() == null) ||
+                filterForm.getEndDate().isAfter(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
+                filterForm.getEndDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
+        return isFilterStartDateBeforeNeedRequestDate && isFilterEndDateAfterNeedRequestDate;
+    }
+
+    private boolean filterLocation(FilterForm filterForm, NeedRequest needRequest) {
+        return (filterForm.getLocation() == null || filterForm.getLocation().isEmpty()) || needRequest.getPersonInNeed().getLocation().equalsIgnoreCase(filterForm.getLocation());
+    }
+
+    private boolean filterFreeText(FilterForm filterForm, NeedRequest needRequest) {
+        return (filterForm.getFreeText() == null || filterForm.getFreeText().isEmpty()) ||
+                needRequest.getPersonInNeed().getName().toLowerCase().contains(filterForm.getFreeText().toLowerCase()) ||
+                needRequest.getPersonInNeed().getLocation().toLowerCase().contains(filterForm.getFreeText().toLowerCase()) ||
+                needRequest.getPersonInNeed().getPhone().contains(filterForm.getFreeText());
+    }
+
+    private LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+    }
+
+    public List<NeedRequestListObject> getRequestFilteredList(FilterForm filterForm) {
+        List<NeedRequestListObject> needRequestListObjects = db.getNeedRequests().stream()
+                .filter(needRequest -> filterHelpStatus(filterForm, needRequest))
+                .filter(needRequest -> filterTypeOfHelp(filterForm, needRequest))
+                .filter(needRequest -> filterDates(filterForm, needRequest))
+                .filter(needRequest -> filterLocation(filterForm, needRequest))
+                .filter(needRequest -> filterFreeText(filterForm, needRequest))
+                .map(this::convertToNeedRequestForm)
+                .collect(Collectors.toList());
+
+        log.info("For following query params {} found {} records", filterForm, needRequestListObjects.size());
+        return needRequestListObjects;
     }
 
     public void updateNeedRequest(String name, String location, String phone, TypeOfHelp typeOfHelp, UUID uuid) {

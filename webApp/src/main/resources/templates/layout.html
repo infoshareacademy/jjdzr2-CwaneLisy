@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -10,15 +10,15 @@
     <link rel="stylesheet" th:href="@{/formStyle.css}">
     <script th:src="@{/webjars/jquery/3.5.1/jquery.js}"></script>
     <meta charset="UTF-8">
-    <title th:replace="${title}"/>
+
 </head>
 <body class="body-background">
 <header>
     <div th:replace="/fragments/navbar.html ::navbar"></div>
 </header>
 
-<section th:replace="${content}">
-</section>
+<div layout:fragment="content">
+</div>
 
 <script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.bundle.js}"></script>
 <script type="text/javascript">

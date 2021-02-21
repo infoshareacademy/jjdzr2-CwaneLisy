@@ -1,160 +1,146 @@
 package com.infoshare.controller;
 
-import com.infoshare.domain.NeedRequest;
-import com.infoshare.domain.TypeOfHelp;
+import com.infoshare.util.NeedRequestHelper;
+import com.infoshare.dto.FilterForm;
 import com.infoshare.formobjects.NeedRequestForm;
-import com.infoshare.formobjects.NeedRequestListObject;
-import com.infoshare.formobjects.NeedRequestSearchForm;
-import com.infoshare.formobjects.VolunteerSearchForm;
 import com.infoshare.service.NeedRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.BiConsumer;
 
 @Controller
 @RequestMapping("need-request")
 public class NeedRequestController {
-    public static final String ACTION_URL = "actionUrl";
-    public static final String TYPES = "types";
+    public static final String EDIT_FORM_ACTION_URL = "actionUrl";
+    public static final String NEW_FORM_ACTION_URL = "newActionUrl";
+
+    public static final String EDIT_NEED_REQUEST_URL = "edit-need-request";
+    public static final String SUBMIT_NEW_NEED_REQUEST_URL = "submit-new-form";
+    public static final String NEED_REQUEST_LIST_VIEW = "need-request-list";
     public static final String REDIRECT_NEED_REQUEST_ALL = "redirect:/need-request/all";
-    public static final String ORIGINAL_CITY = "originalCity";
-    public static final String ORIGINAL_TYPE_OF_HELP = "originalTypeOfHelp";
+
+    public static final String FILTER_FORM_ATTR = "filterForm";
+    public static final String NEW_NEED_REQUEST_ATTR = "newNeedRequest";
+    public static final String EDIT_NEED_REQUEST_ATTR = "editNeedRequest";
+    public static final String NEED_REQUESTS_LIST_ATTR = "needRequestsList";
+
+    public static final String STATUSES_OF_HELP_ATTR = "statusesOfHelp";
+    public static final String TYPES_ATTR = "types";
+
+    public static final String HAS_ERRORS_ATTR = "hasErrors";
+    public static final String NEW_HAS_ERRORS_ATTR = "newHasErrors";
+
     private final NeedRequestService needRequestService;
+
+    BiConsumer<NeedRequestService, NeedRequestForm> createNewNeedRequestConsumer =
+            (service, needRequestForm) -> service.createNeedRequest(needRequestForm.getName(),
+                    needRequestForm.getLocation(), needRequestForm.getPhone(), needRequestForm.getTypeOfHelp());
+
+    BiConsumer<NeedRequestService, NeedRequestForm> updateNeedRequestConsumer =
+            (service, needRequestForm) -> service.updateNeedRequest(needRequestForm.getName(),
+                    needRequestForm.getLocation(),
+                    needRequestForm.getPhone(), needRequestForm.getTypeOfHelp(), needRequestForm.getUuid());
 
     @Autowired
     public NeedRequestController(NeedRequestService needRequestService) {
         this.needRequestService = needRequestService;
     }
 
+    @PostMapping("/filtering")
+    public String filtering(@ModelAttribute(FILTER_FORM_ATTR) FilterForm form,
+                            RedirectAttributes redirectAttributes) {
+        redirectAttributes.addAllAttributes(NeedRequestHelper.createFilteringRedirectAttributes(form));
+        return REDIRECT_NEED_REQUEST_ALL;
+    }
+
     @PostMapping("/submit-new-form")
-    public String submitNeedRequestForm(@Valid @ModelAttribute("request") NeedRequestForm needRequestForm,
-                                        BindingResult br, Model model) {
+    public String submitNeedRequestForm(@Valid @ModelAttribute(NEW_NEED_REQUEST_ATTR) NeedRequestForm needRequestForm,
+                                        BindingResult br,
+                                        @RequestParam Map<String, String> values,
+                                        RedirectAttributes redirectAttributes) {
+
         if (br.hasErrors()) {
-            model.addAttribute(ACTION_URL, "submit-new-form");
-            model.addAttribute(TYPES, needRequestService.getTypesOfHelp());
-            return "need-request-form";
+            return processFormWithErrors(redirectAttributes, values,
+                    Map.of(NEW_HAS_ERRORS_ATTR, true, NEW_NEED_REQUEST_ATTR, needRequestForm,
+                            BindingResult.MODEL_KEY_PREFIX+NEW_NEED_REQUEST_ATTR, br));
         } else {
-            needRequestService.createNeedRequest(needRequestForm.getName(), needRequestForm.getLocation(), needRequestForm.getPhone(), needRequestForm.getTypeOfHelp());
-            return REDIRECT_NEED_REQUEST_ALL;
+            return processFormWithoutErrors(needRequestForm, redirectAttributes, values, createNewNeedRequestConsumer);
         }
     }
 
     @PostMapping("/edit-need-request")
-    public String editNeedRequestForm(@Valid @ModelAttribute("request") NeedRequestForm needRequestForm,
-                                      BindingResult br, Model model,
-                                      @RequestBody MultiValueMap<String, String> values,
-                                      RedirectAttributes redirectAttributes
-    ) {
-        Map<String, String> originalValues = originalSearchValues(values);
+    public String editNeedRequestForm(@Valid @ModelAttribute(EDIT_NEED_REQUEST_ATTR) NeedRequestForm needRequestForm,
+                                      BindingResult br,
+                                      @RequestParam Map<String, String> requestValues,
+                                      RedirectAttributes redirectAttributes) {
+
         if (br.hasErrors()) {
-            model.addAttribute(ACTION_URL, "edit-need-request");
-            model.addAttribute(TYPES, needRequestService.getTypesOfHelp());
-            model.addAttribute("hasErrors", true);
-            model.addAttribute("needRequestsList", getRequestFilteredList(originalValues.get(ORIGINAL_CITY),
-                    originalValues.get(ORIGINAL_TYPE_OF_HELP)));
-            model.addAttribute(ORIGINAL_TYPE_OF_HELP, originalValues.get(ORIGINAL_TYPE_OF_HELP));
-            model.addAttribute(ORIGINAL_CITY, originalValues.get(ORIGINAL_CITY));
-            return "need-request-list";
+            return processFormWithErrors(redirectAttributes, requestValues,
+                    Map.of(HAS_ERRORS_ATTR, true, EDIT_NEED_REQUEST_ATTR, needRequestForm,
+                            BindingResult.MODEL_KEY_PREFIX+ EDIT_NEED_REQUEST_ATTR, br));
         } else {
-            needRequestService.updateNeedRequest(needRequestForm.getName(),
-                    needRequestForm.getLocation(),
-                    needRequestForm.getPhone(), needRequestForm.getTypeOfHelp(), needRequestForm.getUuid());
-
-            redirectAttributes.addAttribute("city", originalValues.get(ORIGINAL_CITY));
-            redirectAttributes.addAttribute("typeOfHelp", originalValues.get(ORIGINAL_TYPE_OF_HELP));
-
-            return REDIRECT_NEED_REQUEST_ALL;
+            return processFormWithoutErrors(needRequestForm, redirectAttributes, requestValues, updateNeedRequestConsumer);
         }
     }
 
-    private Map<String, String> originalSearchValues(MultiValueMap<String, String> values) {
+    private String processFormWithoutErrors(NeedRequestForm needRequestForm,
+                                            RedirectAttributes redirectAttributes,
+                                            Map<String, String> requestValues,
+                                            BiConsumer<NeedRequestService, NeedRequestForm> consumer) {
 
-        if (!values.toSingleValueMap().get(ORIGINAL_CITY).isEmpty() && !values.toSingleValueMap().get(
-                ORIGINAL_TYPE_OF_HELP).isEmpty()) {
-            return Map.of(ORIGINAL_CITY, values.getFirst(ORIGINAL_CITY), ORIGINAL_TYPE_OF_HELP, values.getFirst(
-                    ORIGINAL_TYPE_OF_HELP));
-
-        } else {
-            return Collections.emptyMap();
-        }
-    }
-
-    @GetMapping("/create")
-    public String showNeedRequestForm(Model model) {
-        model.addAttribute(ACTION_URL, "submit-new-form");
-        model.addAttribute(TYPES, needRequestService.getTypesOfHelp());
-        model.addAttribute("request", new NeedRequestForm());
-        return "need-request-form";
-    }
-
-    @GetMapping("/all")
-    public String printAllNeedRequest(Model model,
-                                      @RequestParam(required = false) String city,
-                                      @RequestParam(required = false) String typeOfHelp
-    ) {
-        model.addAttribute(ACTION_URL, "edit-need-request");
-        model.addAttribute(TYPES, needRequestService.getTypesOfHelp());
-        model.addAttribute("statusesOfHelp", needRequestService.getHelpStatuses());
-        model.addAttribute("request", new NeedRequestForm());
-        model.addAttribute(ORIGINAL_CITY, city);
-        model.addAttribute(ORIGINAL_TYPE_OF_HELP, typeOfHelp);
-        model.addAttribute("needRequestsList", getRequestFilteredList(city, typeOfHelp));
-        return "need-request-list";
-    }
-
-    public List<NeedRequestListObject> getAllNeedRequests() {
-        return needRequestService.getAllNeedRequests().stream()
-                .map(this::convertToNeedRequestForm)
-                .collect(Collectors.toList());
-    }
-
-    private NeedRequestListObject convertToNeedRequestForm(NeedRequest needRequest) {
-        return NeedRequestListObject.NeedRequestListObjectBuilder.aNeedRequestListObject()
-                .withUuid(needRequest.getUuid())
-                .withName(needRequest.getPersonInNeed().getName())
-                .withPhone(needRequest.getPersonInNeed().getPhone())
-                .withLocation(needRequest.getPersonInNeed().getLocation())
-                .withTypeOfHelp(needRequest.getTypeOfHelp())
-                .withStatusChange(needRequest.getStatusChange())
-                .withHelpStatus(needRequest.getHelpStatus())
-                .build();
-
-    }
-
-    @GetMapping("/search")
-    public String searchForNeedRequest(Model model) {
-        model.addAttribute("needRequestSearchForm", new VolunteerSearchForm());
-        return "need-request-search-form";
-    }
-
-    @PostMapping("/search/result")
-    public String resultOfSearchForNeedRequest(@Valid @ModelAttribute("needRequestSearchForm") NeedRequestSearchForm needRequestSearchForm,
-                                               BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "need-request-search-form";
-        }
-        redirectAttributes.addAttribute("city", needRequestSearchForm.getCity());
-        redirectAttributes.addAttribute("typeOfHelp", needRequestSearchForm.getTypeOfHelp());
+        consumer.accept(needRequestService, needRequestForm);
+        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
         return REDIRECT_NEED_REQUEST_ALL;
     }
 
-    private List<NeedRequestListObject> getRequestFilteredList(String city, String typeOfHelp) {
-        if (city != null && typeOfHelp != null && !city.isEmpty() && !typeOfHelp.isEmpty()) {
+    private String processFormWithErrors(RedirectAttributes redirectAttributes,
+                                         Map<String, String> requestValues,
+                                         Map<String, ?> errorRelatedEntries) {
 
-            return needRequestService.getNeedRequestFilteredList(city, TypeOfHelp.valueOf(typeOfHelp)).stream()
-                    .map(this::convertToNeedRequestForm)
-                    .collect(Collectors.toList());
-        } else return getAllNeedRequests();
+        errorRelatedEntries.entrySet().stream()
+                .forEach(stringEntry -> redirectAttributes.addFlashAttribute(stringEntry.getKey(), stringEntry.getValue()));
+        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        return REDIRECT_NEED_REQUEST_ALL;
+    }
+
+    @GetMapping(value = "/all")
+    public String printAllNeedRequest(Model model,
+                                      @RequestParam Map<String, String> values) {
+
+        NeedRequestForm newForm = (NeedRequestForm) model.asMap().get(NEW_NEED_REQUEST_ATTR);
+        if (newForm == null) {
+            model.addAttribute(NEW_NEED_REQUEST_ATTR, new NeedRequestForm());
+        } else {
+            model.addAttribute(NEW_NEED_REQUEST_ATTR, newForm);
+        }
+        NeedRequestForm editForm = (NeedRequestForm) model.asMap().get(EDIT_NEED_REQUEST_ATTR);
+        if (editForm == null) {
+            model.addAttribute(EDIT_NEED_REQUEST_ATTR, new NeedRequestForm());
+        } else {
+            model.addAttribute(EDIT_NEED_REQUEST_ATTR, editForm);
+        }
+        FilterForm filterForm= NeedRequestHelper.addFilteringForm(values);
+        model.addAttribute(FILTER_FORM_ATTR, filterForm);
+        addCommonModelAttributes(model, NeedRequestHelper.filterAttributes(values),
+                filterForm);
+        return NEED_REQUEST_LIST_VIEW;
+    }
+
+    private void addCommonModelAttributes(Model model, Map<String, String> originalValues, FilterForm filterForm) {
+        model.addAttribute(EDIT_FORM_ACTION_URL, EDIT_NEED_REQUEST_URL);
+        model.addAttribute(NEW_FORM_ACTION_URL, SUBMIT_NEW_NEED_REQUEST_URL);
+        model.addAttribute(TYPES_ATTR, needRequestService.getTypesOfHelp());
+        model.addAttribute(STATUSES_OF_HELP_ATTR, needRequestService.getHelpStatuses());
+        model.addAttribute(NEED_REQUESTS_LIST_ATTR, needRequestService.getRequestFilteredList(filterForm));
+        originalValues.entrySet().stream()
+                .forEach(entry -> model.addAttribute(entry.getKey(), entry.getValue()));
     }
 
     @GetMapping("/associate-to-volunteer")

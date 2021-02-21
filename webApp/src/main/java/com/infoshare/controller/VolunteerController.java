@@ -1,8 +1,10 @@
 package com.infoshare.controller;
 
 import com.infoshare.domain.Volunteer;
+import com.infoshare.dto.FilterForm;
 import com.infoshare.formobjects.SearchVolunteerForm;
 import com.infoshare.formobjects.VolunteerForm;
+import com.infoshare.formobjects.VolunteerListObject;
 import com.infoshare.formobjects.VolunteerSearchForm;
 import com.infoshare.service.VolunteerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("volunteer")
 public class VolunteerController {
 
+    public static final String ACTION_URL = "actionUrl";
     public static final String TYPES = "types";
     private final VolunteerService volunteerService;
 
@@ -28,7 +32,8 @@ public class VolunteerController {
 
     @GetMapping("/create")
     public String createVolunteer(Model model) {
-        model.addAttribute(new VolunteerForm());
+        model.addAttribute(ACTION_URL, "form-details");
+        model.addAttribute("request",new VolunteerForm());
         model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
         return "volunteer-register-form";
     }
@@ -46,9 +51,32 @@ public class VolunteerController {
     }
 
     @GetMapping("/all")
-    @ResponseBody
-    public List<Volunteer> printAllVolunteers() {
-        return volunteerService.getAllVolunteers();
+    public String printAllVolunteers(Model model) {
+        model.addAttribute(ACTION_URL, "submit-edited-form");
+        model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
+        model.addAttribute("request", new VolunteerForm());
+        model.addAttribute("volunteersList", getAllVolunteers());
+        model.addAttribute("filterForm", new FilterForm());
+        return "volunteer-list";
+    }
+
+    public List<VolunteerListObject> getAllVolunteers() {
+        return volunteerService.getAllVolunteers().stream()
+                .map(this::convertToVolunteerListForm)
+                .collect(Collectors.toList());
+    }
+
+    public VolunteerListObject convertToVolunteerListForm(Volunteer volunteer) {
+        return VolunteerListObject.VolunteerListObjectBuilder.aVolunteerListObject()
+                .withUuid(volunteer.getUuid())
+                .withName(volunteer.getName())
+                .withPhone(volunteer.getPhone())
+                .withLocation(volunteer.getLocation())
+                .withTypeOfHelp(volunteer.getTypeOfHelp())
+                .withIsAvailable(volunteer.isAvailable())
+                .withEmail(volunteer.getEmail())
+                .build();
+
     }
 
     @GetMapping("/search")
@@ -93,13 +121,17 @@ public class VolunteerController {
     }
 
     @PostMapping("/submit-edited-form")
-    public String submitEditedVolunteerForm(@Valid @ModelAttribute("volunteerForm") VolunteerForm volunteerForm, BindingResult br, Model model) {
+    public String submitEditedVolunteerForm(@Valid @ModelAttribute("request") VolunteerForm volunteerForm,
+                                            BindingResult br, Model model) {
         if (br.hasErrors()) {
             model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
-            return "edited-volunteer-form";
+            model.addAttribute(ACTION_URL, "submit-edited-form");
+            model.addAttribute("hasErrors", true);
+            model.addAttribute("volunteersList",getAllVolunteers());
+            return "volunteer-list";
         } else {
             volunteerService.editVolunteerData(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(), volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable(), volunteerForm.getUuid());
-            return "successfully-edited-form";
+            return "redirect:/volunteer/all";
         }
     }
 
