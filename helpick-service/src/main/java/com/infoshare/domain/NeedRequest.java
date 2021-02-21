@@ -1,16 +1,28 @@
 package com.infoshare.domain;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
-
+@Entity
 public class NeedRequest {
 
+    @Enumerated(EnumType.STRING)
     private TypeOfHelp typeOfHelp;
+    @Enumerated(EnumType.STRING)
     private HelpStatuses helpStatus;
     private Date statusChange;
+    @OneToOne
     private PersonInNeed personInNeed;
-    private final UUID uuid;
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID uuid;
 
 
     public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed,
@@ -20,6 +32,10 @@ public class NeedRequest {
         this.statusChange = statusChange;
         this.personInNeed = personInNeed;
         this.uuid = uuid;
+    }
+
+    public NeedRequest() {
+
     }
 
     public static NeedRequest create(TypeOfHelp typeOfHelp, PersonInNeed personInNeed) {

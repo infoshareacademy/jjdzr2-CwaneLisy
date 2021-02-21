@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+
+  db:
+    image: mysql:8
+    container_name: helpick_mysql_db
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secretRootPassword
+      MYSQL_DATABASE: helpick
+      MYSQL_USER: helpickUser
+      MYSQL_PASSWORD: superSecretPassword
+    ports:
+      - "3306:3306"
+
+volumes:
+  db_data:
