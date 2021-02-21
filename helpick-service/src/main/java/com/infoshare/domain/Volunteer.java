@@ -1,17 +1,28 @@
 package com.infoshare.domain;
 
+import org.hibernate.annotations.GenericGenerator;
+import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
 
+
+@Entity
 public class Volunteer {
 
     private String name;
     private String location;
     private String email;
     private String phone;
+    @Enumerated(EnumType.STRING)
     private TypeOfHelp typeOfHelp;
     private boolean isAvailable;
-    private final UUID uuid;
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    private UUID uuid;
 
     public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
         boolean isAvailable, UUID uuid) {
@@ -24,7 +35,11 @@ public class Volunteer {
         this.uuid = uuid;
     }
 
-  public UUID getUuid() {
+    public Volunteer() {
+
+    }
+
+    public UUID getUuid() {
     return uuid;
   }
 
