@@ -2,7 +2,7 @@ package com.infoshare.util;
 
 import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.TypeOfHelp;
-import com.infoshare.dto.FilterForm;
+import com.infoshare.dto.NeedRequestFilterForm;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,7 +29,7 @@ public class NeedRequestHelper {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public static FilterForm addFilteringForm(Map<String, String> requestValues) {
+    public static NeedRequestFilterForm addFilteringForm(Map<String, String> requestValues) {
 
         Set<TypeOfHelp> typeOfHelp = requestValues.get(FILTER_TYPE_OF_HELPS) != null ?
                 Arrays.stream(requestValues.get(FILTER_TYPE_OF_HELPS).split(","))
@@ -47,7 +47,7 @@ public class NeedRequestHelper {
                 (requestValues.get(FILTER_END_DATE) != null && !requestValues.get(FILTER_END_DATE).isEmpty()) ?
                         LocalDate.parse(requestValues.get(FILTER_END_DATE)) : null;
 
-        return FilterForm.FilterFormBuilder.aFilterForm()
+        return NeedRequestFilterForm.FilterFormBuilder.aFilterForm()
                 .withFreeText(requestValues.get(FILTER_FREE_TEXT))
                 .withLocation(requestValues.get(FILTER_LOCATION))
                 .withStartDate(startDate)
@@ -57,7 +57,7 @@ public class NeedRequestHelper {
                 .build();
     }
 
-    public static Map<String, Object> createFilteringRedirectAttributes(FilterForm form) {
+    public static Map<String, Object> createFilteringRedirectAttributes(NeedRequestFilterForm form) {
         DateTimeFormatter europeanDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return Map.of(
                 FILTER_FREE_TEXT, form.getFreeText(),

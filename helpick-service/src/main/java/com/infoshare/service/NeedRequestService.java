@@ -5,7 +5,7 @@ import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.PersonInNeed;
 import com.infoshare.domain.TypeOfHelp;
-import com.infoshare.dto.FilterForm;
+import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.dto.NeedRequestListObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,36 +40,36 @@ public class NeedRequestService {
                 .build();
     }
 
-    private boolean filterHelpStatus(FilterForm filterForm, NeedRequest needRequest) {
-        return (filterForm.getHelpStatuses() == null ||
-                filterForm.getHelpStatuses().isEmpty()) || filterForm.getHelpStatuses().stream()
+    private boolean filterHelpStatus(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getHelpStatuses() == null ||
+                needRequestFilterForm.getHelpStatuses().isEmpty()) || needRequestFilterForm.getHelpStatuses().stream()
                 .anyMatch(helpStatuses -> needRequest.getHelpStatus().equals(helpStatuses));
     }
 
-    private boolean filterTypeOfHelp(FilterForm filterForm, NeedRequest needRequest) {
-        return (filterForm.getTypeOfHelps() == null || filterForm.getTypeOfHelps().isEmpty()) || filterForm.getTypeOfHelps().stream()
+    private boolean filterTypeOfHelp(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getTypeOfHelps() == null || needRequestFilterForm.getTypeOfHelps().isEmpty()) || needRequestFilterForm.getTypeOfHelps().stream()
                 .anyMatch(typeOfHelp -> needRequest.getTypeOfHelp().equals(typeOfHelp));
     }
 
-    private boolean filterDates(FilterForm filterForm, NeedRequest needRequest) {
-        boolean isFilterStartDateBeforeNeedRequestDate = (filterForm.getStartDate() == null) ||
-                filterForm.getStartDate().isBefore(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
-                filterForm.getStartDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
-        boolean isFilterEndDateAfterNeedRequestDate = (filterForm.getEndDate() == null) ||
-                filterForm.getEndDate().isAfter(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
-                filterForm.getEndDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
+    private boolean filterDates(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        boolean isFilterStartDateBeforeNeedRequestDate = (needRequestFilterForm.getStartDate() == null) ||
+                needRequestFilterForm.getStartDate().isBefore(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
+                needRequestFilterForm.getStartDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
+        boolean isFilterEndDateAfterNeedRequestDate = (needRequestFilterForm.getEndDate() == null) ||
+                needRequestFilterForm.getEndDate().isAfter(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
+                needRequestFilterForm.getEndDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
         return isFilterStartDateBeforeNeedRequestDate && isFilterEndDateAfterNeedRequestDate;
     }
 
-    private boolean filterLocation(FilterForm filterForm, NeedRequest needRequest) {
-        return (filterForm.getLocation() == null || filterForm.getLocation().isEmpty()) || needRequest.getPersonInNeed().getLocation().equalsIgnoreCase(filterForm.getLocation());
+    private boolean filterLocation(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getLocation() == null || needRequestFilterForm.getLocation().isEmpty()) || needRequest.getPersonInNeed().getLocation().equalsIgnoreCase(needRequestFilterForm.getLocation());
     }
 
-    private boolean filterFreeText(FilterForm filterForm, NeedRequest needRequest) {
-        return (filterForm.getFreeText() == null || filterForm.getFreeText().isEmpty()) ||
-                needRequest.getPersonInNeed().getName().toLowerCase().contains(filterForm.getFreeText().toLowerCase()) ||
-                needRequest.getPersonInNeed().getLocation().toLowerCase().contains(filterForm.getFreeText().toLowerCase()) ||
-                needRequest.getPersonInNeed().getPhone().contains(filterForm.getFreeText());
+    private boolean filterFreeText(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getFreeText() == null || needRequestFilterForm.getFreeText().isEmpty()) ||
+                needRequest.getPersonInNeed().getName().toLowerCase().contains(needRequestFilterForm.getFreeText().toLowerCase()) ||
+                needRequest.getPersonInNeed().getLocation().toLowerCase().contains(needRequestFilterForm.getFreeText().toLowerCase()) ||
+                needRequest.getPersonInNeed().getPhone().contains(needRequestFilterForm.getFreeText());
     }
 
     private LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
@@ -78,17 +78,17 @@ public class NeedRequestService {
                 .toLocalDate();
     }
 
-    public List<NeedRequestListObject> getRequestFilteredList(FilterForm filterForm) {
+    public List<NeedRequestListObject> getRequestFilteredList(NeedRequestFilterForm needRequestFilterForm) {
         List<NeedRequestListObject> needRequestListObjects = db.getNeedRequests().stream()
-                .filter(needRequest -> filterHelpStatus(filterForm, needRequest))
-                .filter(needRequest -> filterTypeOfHelp(filterForm, needRequest))
-                .filter(needRequest -> filterDates(filterForm, needRequest))
-                .filter(needRequest -> filterLocation(filterForm, needRequest))
-                .filter(needRequest -> filterFreeText(filterForm, needRequest))
+                .filter(needRequest -> filterHelpStatus(needRequestFilterForm, needRequest))
+                .filter(needRequest -> filterTypeOfHelp(needRequestFilterForm, needRequest))
+                .filter(needRequest -> filterDates(needRequestFilterForm, needRequest))
+                .filter(needRequest -> filterLocation(needRequestFilterForm, needRequest))
+                .filter(needRequest -> filterFreeText(needRequestFilterForm, needRequest))
                 .map(this::convertToNeedRequestForm)
                 .collect(Collectors.toList());
 
-        log.info("For following query params {} found {} records", filterForm, needRequestListObjects.size());
+        log.info("For following query params {} found {} records", needRequestFilterForm, needRequestListObjects.size());
         return needRequestListObjects;
     }
 

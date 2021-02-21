@@ -1,138 +1,143 @@
 package com.infoshare.controller;
 
 import com.infoshare.domain.Volunteer;
-import com.infoshare.dto.FilterForm;
-import com.infoshare.formobjects.SearchVolunteerForm;
-import com.infoshare.formobjects.VolunteerForm;
-import com.infoshare.formobjects.VolunteerListObject;
-import com.infoshare.formobjects.VolunteerSearchForm;
+import com.infoshare.dto.VolunteerFilterForm;
+import com.infoshare.dto.VolunteerListObject;
+import com.infoshare.formobjects.*;
 import com.infoshare.service.VolunteerService;
+import com.infoshare.util.NeedRequestHelper;
+import com.infoshare.util.VolunteerHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("volunteer")
 public class VolunteerController {
+    public static final String EDIT_FORM_ACTION_URL = "actionUrl";
+    public static final String NEW_FORM_ACTION_URL = "newActionUrl";
 
-    public static final String ACTION_URL = "actionUrl";
-    public static final String TYPES = "types";
+    public static final String EDIT_VOLUNTEER_URL = "submit-edited-form";
+    public static final String SUBMIT_NEW_VOLUNTEER_URL = "submit-new-form";
+    public static final String VOLUNTEER_LIST_VIEW = "volunteer-list";
+    public static final String REDIRECT_VOLUNTEER_ALL = "redirect:/volunteer/all";
+
+    public static final String FILTER_FORM_ATTR = "filterForm";
+    public static final String NEW_VOLUNTEER_ATTR = "newVolunteer";
+    public static final String EDIT_VOLUNTEER_ATTR = "editVolunteer";
+    public static final String VOLUNTEER_LIST_ATTR = "volunteerList";
+
+    public static final String TYPES_ATTR = "types";
+
+    public static final String HAS_ERRORS_ATTR = "hasErrors";
+    public static final String NEW_HAS_ERRORS_ATTR = "newHasErrors";
+
     private final VolunteerService volunteerService;
+    BiConsumer<VolunteerService, VolunteerForm> createNewVolunteerConsumer =
+            (service, volunteerForm) -> service.registerNewVolunteer(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(),
+                    volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable());
+
+    BiConsumer<VolunteerService, VolunteerForm> updateVolunteerConsumer =
+            (service, volunteerForm) -> service.editVolunteerData(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(), volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable(), volunteerForm.getUuid());
 
     @Autowired
     public VolunteerController(VolunteerService volunteerService) {
         this.volunteerService = volunteerService;
     }
 
-    @GetMapping("/create")
-    public String createVolunteer(Model model) {
-        model.addAttribute(ACTION_URL, "form-details");
-        model.addAttribute("request",new VolunteerForm());
-        model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
-        return "volunteer-register-form";
+
+    @PostMapping("/filtering")
+    public String filtering(@ModelAttribute("volunteerFilterForm") VolunteerFilterForm form,
+                            RedirectAttributes redirectAttributes) {
+        redirectAttributes.addAllAttributes(VolunteerHelper.createFilteringRedirectAttributes(form));
+        return "redirect:/volunteer/all";
     }
 
-    @PostMapping("/form-details")
-    public String createVolunteerFormDetails(@Valid @ModelAttribute("volunteerForm") VolunteerForm volunteerFrom, BindingResult br, Model model) {
+    @PostMapping("/submit-new-form")
+    public String createVolunteerFormDetails(@Valid @ModelAttribute(NEW_VOLUNTEER_ATTR) VolunteerForm volunteerForm,
+                                             BindingResult br,
+                                             @RequestParam Map<String, String> requestValues,
+                                             RedirectAttributes redirectAttributes) {
         if (br.hasErrors()) {
-            model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
-            return "/volunteer-register-form";
+            return processFormWithErrors(redirectAttributes, requestValues,
+                    Map.of(NEW_HAS_ERRORS_ATTR, true, NEW_VOLUNTEER_ATTR, volunteerForm,
+                            BindingResult.MODEL_KEY_PREFIX + NEW_VOLUNTEER_ATTR, br));
         } else {
-            volunteerService.registerNewVolunteer(volunteerFrom.getName(), volunteerFrom.getLocation(), volunteerFrom.getEmail(),
-                    volunteerFrom.getPhone(), volunteerFrom.getTypeOfHelp(), volunteerFrom.isAvailable());
-            return "redirect:/volunteer/all";
+            return processFormWithoutErrors(volunteerForm, redirectAttributes, requestValues, createNewVolunteerConsumer);
         }
-    }
-
-    @GetMapping("/all")
-    public String printAllVolunteers(Model model) {
-        model.addAttribute(ACTION_URL, "submit-edited-form");
-        model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
-        model.addAttribute("request", new VolunteerForm());
-        model.addAttribute("volunteersList", getAllVolunteers());
-        model.addAttribute("filterForm", new FilterForm());
-        return "volunteer-list";
-    }
-
-    public List<VolunteerListObject> getAllVolunteers() {
-        return volunteerService.getAllVolunteers().stream()
-                .map(this::convertToVolunteerListForm)
-                .collect(Collectors.toList());
-    }
-
-    public VolunteerListObject convertToVolunteerListForm(Volunteer volunteer) {
-        return VolunteerListObject.VolunteerListObjectBuilder.aVolunteerListObject()
-                .withUuid(volunteer.getUuid())
-                .withName(volunteer.getName())
-                .withPhone(volunteer.getPhone())
-                .withLocation(volunteer.getLocation())
-                .withTypeOfHelp(volunteer.getTypeOfHelp())
-                .withIsAvailable(volunteer.isAvailable())
-                .withEmail(volunteer.getEmail())
-                .build();
-
-    }
-
-    @GetMapping("/search")
-    public String searchForAvailableVolunteers(Model model) {
-        model.addAttribute("VolunteerSearchForm", new VolunteerSearchForm());
-        return "volunteer-search-form";
-    }
-
-    @PostMapping("/search/result")
-    public String resultOfSearchForVolunteer(@Valid @ModelAttribute("VolunteerSearchForm") VolunteerSearchForm volunteerSearchForm,
-                                             BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            return "volunteer-search-form";
-        }
-        model.addAttribute("volunteers", volunteerService.getVolunteerFilteredList(
-                volunteerSearchForm.getCity(),
-                volunteerSearchForm.getTypeOfHelp()));
-        return "volunteer-search-results";
-    }
-
-    @GetMapping("/search-to-edit")
-    public String searchForVolunteerToEdit(Model model) {
-        model.addAttribute("searchVolunteerForm", new SearchVolunteerForm());
-        return "search-volunteer-for-edit-form";
-    }
-
-    @PostMapping("/check-search-to-edit")
-    public String checkIfVolunteerToEditExists(@Valid @ModelAttribute("searchVolunteerForm") SearchVolunteerForm searchVolunteerForm, BindingResult br) {
-        if (br.hasErrors()) {
-            return "search-volunteer-for-edit-form";
-        } else {
-            return "redirect:/volunteer/edit?email=" + searchVolunteerForm.getEmail();
-        }
-    }
-
-    @GetMapping("/edit")
-    public String editVolunteer(Model model, @RequestParam(value = "email") String email) {
-        Volunteer volunteerForEdit = volunteerService.searchForVolunteer(email);
-        model.addAttribute(new VolunteerForm(volunteerForEdit));
-        model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
-        return "edited-volunteer-form";
     }
 
     @PostMapping("/submit-edited-form")
-    public String submitEditedVolunteerForm(@Valid @ModelAttribute("request") VolunteerForm volunteerForm,
-                                            BindingResult br, Model model) {
+    public String submitEditedVolunteerForm(@Valid @ModelAttribute(EDIT_VOLUNTEER_ATTR) VolunteerForm volunteerForm,
+                                            BindingResult br,
+                                            @RequestParam Map<String, String> requestValues,
+                                            RedirectAttributes redirectAttributes) {
         if (br.hasErrors()) {
-            model.addAttribute(TYPES, volunteerService.getTypesOfHelp());
-            model.addAttribute(ACTION_URL, "submit-edited-form");
-            model.addAttribute("hasErrors", true);
-            model.addAttribute("volunteersList",getAllVolunteers());
-            return "volunteer-list";
+            return processFormWithErrors(redirectAttributes, requestValues,
+                    Map.of(HAS_ERRORS_ATTR, true, EDIT_VOLUNTEER_ATTR, volunteerForm,
+                            BindingResult.MODEL_KEY_PREFIX + EDIT_VOLUNTEER_ATTR, br));
         } else {
-            volunteerService.editVolunteerData(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(), volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable(), volunteerForm.getUuid());
-            return "redirect:/volunteer/all";
+            return processFormWithoutErrors(volunteerForm, redirectAttributes, requestValues, updateVolunteerConsumer);
         }
+    }
+
+    private String processFormWithoutErrors(VolunteerForm volunteerForm,
+                                            RedirectAttributes redirectAttributes,
+                                            Map<String, String> requestValues,
+                                            BiConsumer<VolunteerService, VolunteerForm> consumer) {
+
+        consumer.accept(volunteerService, volunteerForm);
+        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        return REDIRECT_VOLUNTEER_ALL;
+    }
+
+    private String processFormWithErrors(RedirectAttributes redirectAttributes,
+                                         Map<String, String> requestValues,
+                                         Map<String, ?> errorRelatedEntries) {
+
+        errorRelatedEntries.entrySet().stream()
+                .forEach(stringEntry -> redirectAttributes.addFlashAttribute(stringEntry.getKey(), stringEntry.getValue()));
+        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        return REDIRECT_VOLUNTEER_ALL;
+    }
+
+    @GetMapping("/all")
+    public String printAllVolunteers(Model model,
+                                     @RequestParam Map<String, String> values) {
+        VolunteerForm newForm = (VolunteerForm) model.asMap().get(NEW_VOLUNTEER_ATTR);
+        if (newForm == null) {
+            model.addAttribute(NEW_VOLUNTEER_ATTR, new VolunteerForm());
+        } else {
+            model.addAttribute(NEW_VOLUNTEER_ATTR, newForm);
+        }
+        VolunteerForm editForm = (VolunteerForm) model.asMap().get(EDIT_VOLUNTEER_ATTR);
+        if (editForm == null) {
+            model.addAttribute(EDIT_VOLUNTEER_ATTR, new VolunteerForm());
+        } else {
+            model.addAttribute(EDIT_VOLUNTEER_ATTR, editForm);
+        }
+        VolunteerFilterForm volunteerFilterForm = VolunteerHelper.addFilteringForm(values);
+        model.addAttribute(FILTER_FORM_ATTR, volunteerFilterForm);
+        addCommonModelAttributes(model, VolunteerHelper.filterAttributes(values),
+                volunteerFilterForm);
+        return VOLUNTEER_LIST_VIEW;
+    }
+    private void addCommonModelAttributes(Model model, Map<String, String> originalValues, VolunteerFilterForm volunteerFilterForm) {
+        model.addAttribute(EDIT_FORM_ACTION_URL, EDIT_VOLUNTEER_URL);
+        model.addAttribute(NEW_FORM_ACTION_URL, SUBMIT_NEW_VOLUNTEER_URL);
+        model.addAttribute(TYPES_ATTR, volunteerService.getTypesOfHelp());
+        model.addAttribute(VOLUNTEER_LIST_ATTR, volunteerService.getVolunteerFilteredList(volunteerFilterForm));
+        originalValues.entrySet().stream()
+                .forEach(entry -> model.addAttribute(entry.getKey(), entry.getValue()));
     }
 
     @GetMapping("/change-status")
@@ -142,6 +147,6 @@ public class VolunteerController {
 
     private String getTestViewWithPageUnderConstructionMessage(Model model) {
         model.addAttribute("message", "This page is under construction...");
-        return "test-view";
+        return REDIRECT_VOLUNTEER_ALL;
     }
 }

@@ -1,4 +1,4 @@
-package com.infoshare.formobjects;
+package com.infoshare.dto;
 
 import com.infoshare.domain.TypeOfHelp;
 

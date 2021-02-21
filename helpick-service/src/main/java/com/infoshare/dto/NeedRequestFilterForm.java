@@ -7,7 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.Set;
 
-public class FilterForm {
+public class NeedRequestFilterForm {
 
     private String freeText;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -114,15 +114,15 @@ public class FilterForm {
             return this;
         }
 
-        public FilterForm build() {
-            FilterForm filterForm = new FilterForm();
-            filterForm.setFreeText(freeText);
-            filterForm.setStartDate(startDate);
-            filterForm.setEndDate(endDate);
-            filterForm.setTypeOfHelps(typeOfHelps);
-            filterForm.setHelpStatuses(helpStatuses);
-            filterForm.setLocation(location);
-            return filterForm;
+        public NeedRequestFilterForm build() {
+            NeedRequestFilterForm needRequestFilterForm = new NeedRequestFilterForm();
+            needRequestFilterForm.setFreeText(freeText);
+            needRequestFilterForm.setStartDate(startDate);
+            needRequestFilterForm.setEndDate(endDate);
+            needRequestFilterForm.setTypeOfHelps(typeOfHelps);
+            needRequestFilterForm.setHelpStatuses(helpStatuses);
+            needRequestFilterForm.setLocation(location);
+            return needRequestFilterForm;
         }
     }
 

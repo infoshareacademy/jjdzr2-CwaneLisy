@@ -1,7 +1,7 @@
 package com.infoshare.controller;
 
 import com.infoshare.util.NeedRequestHelper;
-import com.infoshare.dto.FilterForm;
+import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.formobjects.NeedRequestForm;
 import com.infoshare.service.NeedRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class NeedRequestController {
     }
 
     @PostMapping("/filtering")
-    public String filtering(@ModelAttribute(FILTER_FORM_ATTR) FilterForm form,
+    public String filtering(@ModelAttribute(FILTER_FORM_ATTR) NeedRequestFilterForm form,
                             RedirectAttributes redirectAttributes) {
         redirectAttributes.addAllAttributes(NeedRequestHelper.createFilteringRedirectAttributes(form));
         return REDIRECT_NEED_REQUEST_ALL;
@@ -126,19 +126,19 @@ public class NeedRequestController {
         } else {
             model.addAttribute(EDIT_NEED_REQUEST_ATTR, editForm);
         }
-        FilterForm filterForm= NeedRequestHelper.addFilteringForm(values);
-        model.addAttribute(FILTER_FORM_ATTR, filterForm);
+        NeedRequestFilterForm needRequestFilterForm = NeedRequestHelper.addFilteringForm(values);
+        model.addAttribute(FILTER_FORM_ATTR, needRequestFilterForm);
         addCommonModelAttributes(model, NeedRequestHelper.filterAttributes(values),
-                filterForm);
+                needRequestFilterForm);
         return NEED_REQUEST_LIST_VIEW;
     }
 
-    private void addCommonModelAttributes(Model model, Map<String, String> originalValues, FilterForm filterForm) {
+    private void addCommonModelAttributes(Model model, Map<String, String> originalValues, NeedRequestFilterForm needRequestFilterForm) {
         model.addAttribute(EDIT_FORM_ACTION_URL, EDIT_NEED_REQUEST_URL);
         model.addAttribute(NEW_FORM_ACTION_URL, SUBMIT_NEW_NEED_REQUEST_URL);
         model.addAttribute(TYPES_ATTR, needRequestService.getTypesOfHelp());
         model.addAttribute(STATUSES_OF_HELP_ATTR, needRequestService.getHelpStatuses());
-        model.addAttribute(NEED_REQUESTS_LIST_ATTR, needRequestService.getRequestFilteredList(filterForm));
+        model.addAttribute(NEED_REQUESTS_LIST_ATTR, needRequestService.getRequestFilteredList(needRequestFilterForm));
         originalValues.entrySet().stream()
                 .forEach(entry -> model.addAttribute(entry.getKey(), entry.getValue()));
     }
@@ -159,7 +159,7 @@ public class NeedRequestController {
     }
 
     private String getTestViewWithPageUnderConstructionMessage(Model model) {
-        model.addAttribute("message", "This page is under construction...");
-        return "test-view";
+       // redirectAttributes.addFlashAttribute("message", "This page is under construction...");
+        return REDIRECT_NEED_REQUEST_ALL;
     }
 }

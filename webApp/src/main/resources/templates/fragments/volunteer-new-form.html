@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="edit-form(actionUrl)">
+    <form class="form-horizontal w-100" action="#" method="post" th:object="${newVolunteer}"
+          th:action="@{/volunteer/}+${actionUrl}" th:fragment="volunteer-form">
+        <div th:insert="/fragments/volunteer-filtering-hidden-fields.html :: filtering-hidden-fields"/>
+        <input type="hidden" th:name="uuid" th:id="uuid" th:value="${volunteer!=null} ? ${volunteer.uuid}: ''"/>
+        <div class="form-group row mb-sm-3">
+            <label class="col-sm-4 col-form-label " th:text="#{basicForm.name}"></label>
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <input type="text" class="form-control input-md" th:field="*{name}"/>
+                    <small class="errorClass form-text" th:if="${#fields.hasErrors('name') && newHasErrors}"
+                           th:errors="*{name}"></small>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row mb-sm-3">
+            <label class="col-sm-4 col-form-label" th:text="#{basicForm.location}"></label>
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <input type="text" class="form-control input-md" th:field="*{location}"/>
+                    <small class="errorClass form-text" th:if="${#fields.hasErrors('location') && newHasErrors}"
+                           th:errors="*{location}"></small>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row mb-sm-3">
+            <label class="col-sm-4 col-form-label " th:text="#{basicForm.email}"></label>
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <input type="text" class="form-control input-md" th:field="*{email}"/>
+                    <small class="errorClass form-text" th:if="${#fields.hasErrors('email') && newHasErrors}"
+                           th:errors="*{email}"></small>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row mb-sm-3">
+            <label class="col-sm-4 col-form-label " th:text="#{basicForm.phone}"></label>
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <input type="text" class="form-control input-md" th:field="*{phone}"/>
+                    <small class="errorClass form-text" th:if="${#fields.hasErrors('phone') && newHasErrors}"
+                           th:errors="*{phone}"></small>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row mb-sm-3">
+            <label class="col-sm-4 col-form-label" th:text="#{basicForm.typeOfHelp}"></label>
+            <div class="col-sm-8">
+                <select class="custom-select" th:field="*{typeOfHelp}">
+                    <option th:each="element: ${types}" th:value="${element}"
+                            th:text="${element.type}"/>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row mb-sm-3">
+            <div class="col-sm-10">
+                <label class="col-form-label" th:text="#{basicForm.isAvailable}"></label>
+            </div>
+            <div class="col-sm-2 d-flex align-items-end justify-content-end">
+                <div class="form-check ">
+                    <input type="checkbox"
+                           class="form-check-input position-static" th:field="*{available}"/>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            <button class="btn btn-success" type="submit" th:text="#{basicForm.submit}"></button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

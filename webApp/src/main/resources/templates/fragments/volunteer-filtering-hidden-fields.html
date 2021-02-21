@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="filtering-hidden-fields">
+    <input type="hidden" th:name="filterFreeText"
+           th:value="${filterFreeText}"/>
+    <input type="hidden" th:name="filterTypeOfHelps"
+           th:value="${filterTypeOfHelps}"/>
+
+    <input type="hidden" th:name="filterLocation"
+           th:value="${filterLocation}"/>
+    <input type="hidden" th:name="filterIsAvailable"
+           th:value="${filterIsAvailable}"/>
+</div>
+</body>
+</html>
