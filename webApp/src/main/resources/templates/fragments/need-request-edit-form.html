@@ -10,15 +10,15 @@
 
         <div th:insert="/fragments/need-request-filtering-hidden-fields.html :: filtering-hidden-fields"/>
 
-        <input type="hidden" th:name="uuid" th:id="uuid" th:value="${needRequest!=null} ? ${needRequest.uuid}: ''"/>
+        <input type="hidden" th:name="uuid" th:id="uuid" th:value="${needRequest.uuid}"/>
         <div class="form-group row mb-sm-3">
             <label class="col-sm-4 col-form-label " th:text="#{basicForm.name}"></label>
             <div class="col-sm-8">
                 <div class="form-group">
                     <input type="text" class="form-control input-md" th:name="name" th:id="name"
-                           th:value="${needRequest==null || (#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid)} ? ${editNeedRequest.name} : ${needRequest.name}"/>
+                           th:value="${#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid} ? ${editNeedRequest.name} : ${needRequest.name}"/>
                     <span class="errorClass form-text"
-                          th:if="${#fields.hasErrors('name') && (needRequest==null || needRequest.uuid==editNeedRequest.uuid)}"
+                          th:if="${#fields.hasErrors('name') && needRequest.uuid==editNeedRequest.uuid}"
                           th:errors="*{name}"></span>
                 </div>
             </div>
@@ -28,9 +28,9 @@
             <div class="col-sm-8">
                 <div class="form-group">
                     <input type="text" class="form-control input-md" th:name="location" th:id="location"
-                           th:value="${needRequest==null || (#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid)} ? ${editNeedRequest.location} : ${needRequest.location}"/>
+                           th:value="${#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid} ? ${editNeedRequest.location} : ${needRequest.location}"/>
                     <span class="errorClass form-text"
-                          th:if="${#fields.hasErrors('location') && (needRequest==null || needRequest.uuid==editNeedRequest.uuid)}"
+                          th:if="${#fields.hasErrors('location') && needRequest.uuid==editNeedRequest.uuid}"
                           th:errors="*{location}"></span>
                 </div>
             </div>
@@ -40,9 +40,9 @@
             <div class="col-sm-8">
                 <div class="form-group">
                     <input type="text" class="form-control input-md" th:name="phone" th:id="phone"
-                           th:value="${needRequest==null || (#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid)} ? ${editNeedRequest.phone} : ${needRequest.phone}"/>
+                           th:value="${#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid} ? ${editNeedRequest.phone} : ${needRequest.phone}"/>
                     <span class="errorClass form-text"
-                          th:if="${#fields.hasErrors('phone') && (needRequest==null || needRequest.uuid==editNeedRequest.uuid)}"
+                          th:if="${#fields.hasErrors('phone') && needRequest.uuid==editNeedRequest.uuid}"
                           th:errors="*{phone}"></span>
                 </div>
             </div>
@@ -52,10 +52,10 @@
             <div class="col-sm-8">
                 <select class="custom-select" th:name="typeOfHelp"
                         th:id="typeOfHelp"
-                        th:value="${needRequest==null || (#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid)} ? ${editNeedRequest.typeOfHelp} : ${needRequest.typeOfHelp}">
+                        th:value="${#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid} ? ${editNeedRequest.typeOfHelp} : ${needRequest.typeOfHelp}">
                     <option th:each="element: ${types}" th:value="${element}"
                             th:text="${element.type}"
-                            th:selected="${needRequest==null || (#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid)}  ? ${element==editNeedRequest.typeOfHelp} : ${element==needRequest.typeOfHelp}"/>
+                            th:selected="${#fields.hasErrors() && needRequest.uuid==editNeedRequest.uuid}  ? ${element==editNeedRequest.typeOfHelp} : ${element==needRequest.typeOfHelp}"/>
                 </select>
 
             </div>

@@ -155,16 +155,6 @@ public class NeedRequestService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<NeedRequest> getNeedRequestById(UUID uuid) {
-        return db.getNeedRequests().stream()
-                .filter(n -> n.getUuid().equals(uuid))
-                .findAny();
-    }
-
-    public List<NeedRequest> getAllNeedRequests() {
-        return db.getNeedRequests();
-    }
-
     public List<TypeOfHelp> getTypesOfHelp() {
         return Arrays.asList(TypeOfHelp.values());
     }

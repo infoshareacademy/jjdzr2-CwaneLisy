@@ -34,6 +34,7 @@ public class VolunteerService {
                 .withUuid(volunteer.getUuid())
                 .withName(volunteer.getName())
                 .withPhone(volunteer.getPhone())
+                .withEmail(volunteer.getEmail())
                 .withLocation(volunteer.getLocation())
                 .withTypeOfHelp(volunteer.getTypeOfHelp())
                 .withIsAvailable(volunteer.isAvailable())
@@ -53,7 +54,7 @@ public class VolunteerService {
                 volunteer.getPhone().contains(volunteerFilterForm.getFreeText());
     }
     private boolean filterAvailability(VolunteerFilterForm volunteerFilterForm, Volunteer volunteer) {
-        if(volunteer.isAvailable()==false && volunteerFilterForm.isAvailable()){
+        if(!volunteer.isAvailable() && volunteerFilterForm.isAvailable()){
             return false;
         }else{
           return true;
@@ -85,12 +86,6 @@ public class VolunteerService {
         return db.getVolunteer(email);
     }
 
-    public Optional<Volunteer> getVolunteerById(UUID uuid) {
-        return db.getVolunteers().stream()
-                .filter(v -> v.getUuid().equals(uuid))
-                .findAny();
-    }
-
     public boolean updateAvailability(Volunteer volunteer) {
         if (volunteer != null) {
             volunteer.setAvailable(!volunteer.isAvailable());
@@ -114,10 +109,6 @@ public class VolunteerService {
 
     public List<TypeOfHelp> getTypesOfHelp() {
         return Arrays.asList(TypeOfHelp.values());
-    }
-
-    public List<Volunteer> getAllVolunteers() {
-        return db.getVolunteers();
     }
 
     public boolean editVolunteerData(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
