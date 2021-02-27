@@ -28,56 +28,6 @@ public class NeedRequestService {
         this.db = db;
     }
 
-    private NeedRequestListObject convertToNeedRequestForm(NeedRequest needRequest) {
-        return NeedRequestListObject.NeedRequestListObjectBuilder.aNeedRequestListObject()
-                .withUuid(needRequest.getUuid())
-                .withName(needRequest.getPersonInNeed().getName())
-                .withPhone(needRequest.getPersonInNeed().getPhone())
-                .withLocation(needRequest.getPersonInNeed().getLocation())
-                .withTypeOfHelp(needRequest.getTypeOfHelp())
-                .withStatusChange(needRequest.getStatusChange())
-                .withHelpStatus(needRequest.getHelpStatus())
-                .build();
-    }
-
-    private boolean filterHelpStatus(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
-        return (needRequestFilterForm.getHelpStatuses() == null ||
-                needRequestFilterForm.getHelpStatuses().isEmpty()) || needRequestFilterForm.getHelpStatuses().stream()
-                .anyMatch(helpStatuses -> needRequest.getHelpStatus().equals(helpStatuses));
-    }
-
-    private boolean filterTypeOfHelp(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
-        return (needRequestFilterForm.getTypeOfHelps() == null || needRequestFilterForm.getTypeOfHelps().isEmpty()) || needRequestFilterForm.getTypeOfHelps().stream()
-                .anyMatch(typeOfHelp -> needRequest.getTypeOfHelp().equals(typeOfHelp));
-    }
-
-    private boolean filterDates(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
-        boolean isFilterStartDateBeforeNeedRequestDate = (needRequestFilterForm.getStartDate() == null) ||
-                needRequestFilterForm.getStartDate().isBefore(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
-                needRequestFilterForm.getStartDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
-        boolean isFilterEndDateAfterNeedRequestDate = (needRequestFilterForm.getEndDate() == null) ||
-                needRequestFilterForm.getEndDate().isAfter(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
-                needRequestFilterForm.getEndDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
-        return isFilterStartDateBeforeNeedRequestDate && isFilterEndDateAfterNeedRequestDate;
-    }
-
-    private boolean filterLocation(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
-        return (needRequestFilterForm.getLocation() == null || needRequestFilterForm.getLocation().isEmpty()) || needRequest.getPersonInNeed().getLocation().equalsIgnoreCase(needRequestFilterForm.getLocation());
-    }
-
-    private boolean filterFreeText(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
-        return (needRequestFilterForm.getFreeText() == null || needRequestFilterForm.getFreeText().isEmpty()) ||
-                needRequest.getPersonInNeed().getName().toLowerCase().contains(needRequestFilterForm.getFreeText().toLowerCase()) ||
-                needRequest.getPersonInNeed().getLocation().toLowerCase().contains(needRequestFilterForm.getFreeText().toLowerCase()) ||
-                needRequest.getPersonInNeed().getPhone().contains(needRequestFilterForm.getFreeText());
-    }
-
-    private LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
-        return dateToConvert.toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
-    }
-
     public List<NeedRequestListObject> getRequestFilteredList(NeedRequestFilterForm needRequestFilterForm) {
         List<NeedRequestListObject> needRequestListObjects = db.getNeedRequests().stream()
                 .filter(needRequest -> filterHelpStatus(needRequestFilterForm, needRequest))
@@ -161,5 +111,55 @@ public class NeedRequestService {
 
     public List<HelpStatuses> getHelpStatuses() {
         return Arrays.asList(HelpStatuses.values());
+    }
+
+    private NeedRequestListObject convertToNeedRequestForm(NeedRequest needRequest) {
+        return NeedRequestListObject.NeedRequestListObjectBuilder.aNeedRequestListObject()
+                .withUuid(needRequest.getUuid())
+                .withName(needRequest.getPersonInNeed().getName())
+                .withPhone(needRequest.getPersonInNeed().getPhone())
+                .withLocation(needRequest.getPersonInNeed().getLocation())
+                .withTypeOfHelp(needRequest.getTypeOfHelp())
+                .withStatusChange(needRequest.getStatusChange())
+                .withHelpStatus(needRequest.getHelpStatus())
+                .build();
+    }
+
+    private boolean filterHelpStatus(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getHelpStatuses() == null ||
+                needRequestFilterForm.getHelpStatuses().isEmpty()) || needRequestFilterForm.getHelpStatuses().stream()
+                .anyMatch(helpStatuses -> needRequest.getHelpStatus().equals(helpStatuses));
+    }
+
+    private boolean filterTypeOfHelp(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getTypeOfHelps() == null || needRequestFilterForm.getTypeOfHelps().isEmpty()) || needRequestFilterForm.getTypeOfHelps().stream()
+                .anyMatch(typeOfHelp -> needRequest.getTypeOfHelp().equals(typeOfHelp));
+    }
+
+    private boolean filterDates(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        boolean isFilterStartDateBeforeNeedRequestDate = (needRequestFilterForm.getStartDate() == null) ||
+                needRequestFilterForm.getStartDate().isBefore(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
+                needRequestFilterForm.getStartDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
+        boolean isFilterEndDateAfterNeedRequestDate = (needRequestFilterForm.getEndDate() == null) ||
+                needRequestFilterForm.getEndDate().isAfter(convertToLocalDateViaInstant(needRequest.getStatusChange())) ||
+                needRequestFilterForm.getEndDate().isEqual(convertToLocalDateViaInstant(needRequest.getStatusChange()));
+        return isFilterStartDateBeforeNeedRequestDate && isFilterEndDateAfterNeedRequestDate;
+    }
+
+    private boolean filterLocation(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getLocation() == null || needRequestFilterForm.getLocation().isEmpty()) || needRequest.getPersonInNeed().getLocation().equalsIgnoreCase(needRequestFilterForm.getLocation());
+    }
+
+    private boolean filterFreeText(NeedRequestFilterForm needRequestFilterForm, NeedRequest needRequest) {
+        return (needRequestFilterForm.getFreeText() == null || needRequestFilterForm.getFreeText().isEmpty()) ||
+                needRequest.getPersonInNeed().getName().toLowerCase().contains(needRequestFilterForm.getFreeText().toLowerCase()) ||
+                needRequest.getPersonInNeed().getLocation().toLowerCase().contains(needRequestFilterForm.getFreeText().toLowerCase()) ||
+                needRequest.getPersonInNeed().getPhone().contains(needRequestFilterForm.getFreeText());
+    }
+
+    private LocalDate convertToLocalDateViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
     }
 }

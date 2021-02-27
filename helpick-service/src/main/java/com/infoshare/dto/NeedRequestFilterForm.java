@@ -5,7 +5,11 @@ import com.infoshare.domain.TypeOfHelp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class NeedRequestFilterForm {
 
@@ -74,8 +78,9 @@ public class NeedRequestFilterForm {
         private LocalDate startDate;
         private LocalDate endDate;
         private Set<TypeOfHelp> typeOfHelps;
-        private Set<HelpStatuses> helpStatuses ;
+        private Set<HelpStatuses> helpStatuses;
         private String location;
+        private static final String VALID_DATE = "\\d{4}-\\d{2}-\\d{2}";
 
         private FilterFormBuilder() {
         }
@@ -94,23 +99,37 @@ public class NeedRequestFilterForm {
             return this;
         }
 
-        public FilterFormBuilder withStartDate(LocalDate startDate) {
-            this.startDate = startDate;
+        public FilterFormBuilder withStartDate(String startDate) {
+            Optional.ofNullable(startDate)
+                    .filter(Predicate.not(String::isEmpty))
+                    .filter(s -> s.matches(VALID_DATE))
+                    .ifPresent(s -> this.startDate = LocalDate.parse(s));
             return this;
         }
 
-        public FilterFormBuilder withEndDate(LocalDate endDate) {
-            this.endDate = endDate;
+        public FilterFormBuilder withEndDate(String endDate) {
+            Optional.ofNullable(endDate)
+                    .filter(Predicate.not((String::isEmpty)))
+                    .filter(s -> s.matches(VALID_DATE))
+                    .ifPresent(s -> this.endDate=LocalDate.parse(s));
             return this;
         }
 
-        public FilterFormBuilder withTypeOfHelps(Set<TypeOfHelp> typeOfHelps) {
-            this.typeOfHelps = typeOfHelps;
+        public FilterFormBuilder withTypeOfHelps(String typeOfHelps) {
+            Optional.ofNullable(typeOfHelps)
+                    .filter(Predicate.not(String::isEmpty))
+                    .map(s -> Arrays.stream(s.split(",")))
+                    .map(stringStream -> stringStream.map(TypeOfHelp::valueOf).collect(Collectors.toSet()))
+                    .ifPresent(typeOfHelps1 -> this.typeOfHelps = typeOfHelps1);
             return this;
         }
 
-        public FilterFormBuilder withHelpStatuses(Set<HelpStatuses> helpStatuses) {
-            this.helpStatuses = helpStatuses;
+        public FilterFormBuilder withHelpStatuses(String helpStatuses) {
+            Optional.ofNullable(helpStatuses)
+                    .filter(Predicate.not(String::isEmpty))
+                    .map(s -> Arrays.stream(s.split(",")))
+                    .map(stringStream -> stringStream.map(HelpStatuses::valueOf).collect(Collectors.toSet()))
+                    .ifPresent(helpStatuses1 -> this.helpStatuses=helpStatuses1);
             return this;
         }
 

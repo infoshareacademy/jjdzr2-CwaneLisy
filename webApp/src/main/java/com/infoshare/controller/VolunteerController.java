@@ -1,12 +1,9 @@
 package com.infoshare.controller;
 
-import com.infoshare.domain.Volunteer;
 import com.infoshare.dto.VolunteerFilterForm;
-import com.infoshare.dto.VolunteerListObject;
-import com.infoshare.formobjects.*;
+import com.infoshare.formobjects.VolunteerForm;
 import com.infoshare.service.VolunteerService;
-import com.infoshare.util.NeedRequestHelper;
-import com.infoshare.util.VolunteerHelper;
+import com.infoshare.util.VolunteerFilteringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("volunteer")
@@ -42,6 +37,7 @@ public class VolunteerController {
     public static final String NEW_HAS_ERRORS_ATTR = "newHasErrors";
 
     private final VolunteerService volunteerService;
+    private final VolunteerFilteringService volunteerFilteringService;
     BiConsumer<VolunteerService, VolunteerForm> createNewVolunteerConsumer =
             (service, volunteerForm) -> service.registerNewVolunteer(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(),
                     volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable());
@@ -50,15 +46,16 @@ public class VolunteerController {
             (service, volunteerForm) -> service.editVolunteerData(volunteerForm.getName(), volunteerForm.getLocation(), volunteerForm.getEmail(), volunteerForm.getPhone(), volunteerForm.getTypeOfHelp(), volunteerForm.isAvailable(), volunteerForm.getUuid());
 
     @Autowired
-    public VolunteerController(VolunteerService volunteerService) {
+    public VolunteerController(VolunteerService volunteerService, VolunteerFilteringService volunteerFilteringService) {
         this.volunteerService = volunteerService;
+        this.volunteerFilteringService = volunteerFilteringService;
     }
 
 
     @PostMapping("/filtering")
     public String filtering(@ModelAttribute("volunteerFilterForm") VolunteerFilterForm form,
                             RedirectAttributes redirectAttributes) {
-        redirectAttributes.addAllAttributes(VolunteerHelper.createFilteringRedirectAttributes(form));
+        redirectAttributes.addAllAttributes(volunteerFilteringService.createFilteringRedirectAttributes(form));
         return "redirect:/volunteer/all";
     }
 
@@ -96,7 +93,7 @@ public class VolunteerController {
                                             BiConsumer<VolunteerService, VolunteerForm> consumer) {
 
         consumer.accept(volunteerService, volunteerForm);
-        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        redirectAttributes.addAllAttributes(volunteerFilteringService.filterAttributes(requestValues));
         return REDIRECT_VOLUNTEER_ALL;
     }
 
@@ -106,7 +103,7 @@ public class VolunteerController {
 
         errorRelatedEntries.entrySet().stream()
                 .forEach(stringEntry -> redirectAttributes.addFlashAttribute(stringEntry.getKey(), stringEntry.getValue()));
-        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        redirectAttributes.addAllAttributes(volunteerFilteringService.filterAttributes(requestValues));
         return REDIRECT_VOLUNTEER_ALL;
     }
 
@@ -125,19 +122,19 @@ public class VolunteerController {
         } else {
             model.addAttribute(EDIT_VOLUNTEER_ATTR, editForm);
         }
-        VolunteerFilterForm volunteerFilterForm = VolunteerHelper.addFilteringForm(values);
+        VolunteerFilterForm volunteerFilterForm = volunteerFilteringService.addFilteringForm(values);
         model.addAttribute(FILTER_FORM_ATTR, volunteerFilterForm);
-        addCommonModelAttributes(model, VolunteerHelper.filterAttributes(values),
+        addCommonModelAttributes(model, volunteerFilteringService.filterAttributes(values),
                 volunteerFilterForm);
         return VOLUNTEER_LIST_VIEW;
     }
+
     private void addCommonModelAttributes(Model model, Map<String, String> originalValues, VolunteerFilterForm volunteerFilterForm) {
         model.addAttribute(EDIT_FORM_ACTION_URL, EDIT_VOLUNTEER_URL);
         model.addAttribute(NEW_FORM_ACTION_URL, SUBMIT_NEW_VOLUNTEER_URL);
         model.addAttribute(TYPES_ATTR, volunteerService.getTypesOfHelp());
         model.addAttribute(VOLUNTEER_LIST_ATTR, volunteerService.getVolunteerFilteredList(volunteerFilterForm));
-        originalValues.entrySet().stream()
-                .forEach(entry -> model.addAttribute(entry.getKey(), entry.getValue()));
+        originalValues.forEach(model::addAttribute);
     }
 
     @GetMapping("/change-status")

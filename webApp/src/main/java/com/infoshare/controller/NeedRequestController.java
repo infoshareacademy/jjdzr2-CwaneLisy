@@ -1,9 +1,9 @@
 package com.infoshare.controller;
 
-import com.infoshare.util.NeedRequestHelper;
 import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.formobjects.NeedRequestForm;
 import com.infoshare.service.NeedRequestService;
+import com.infoshare.util.NeedRequestFilteringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +38,7 @@ public class NeedRequestController {
     public static final String NEW_HAS_ERRORS_ATTR = "newHasErrors";
 
     private final NeedRequestService needRequestService;
+    private final NeedRequestFilteringService needRequestFilteringService;
 
     BiConsumer<NeedRequestService, NeedRequestForm> createNewNeedRequestConsumer =
             (service, needRequestForm) -> service.createNeedRequest(needRequestForm.getName(),
@@ -49,14 +50,15 @@ public class NeedRequestController {
                     needRequestForm.getPhone(), needRequestForm.getTypeOfHelp(), needRequestForm.getUuid());
 
     @Autowired
-    public NeedRequestController(NeedRequestService needRequestService) {
+    public NeedRequestController(NeedRequestService needRequestService, NeedRequestFilteringService needRequestFilteringService) {
         this.needRequestService = needRequestService;
+        this.needRequestFilteringService = needRequestFilteringService;
     }
 
     @PostMapping("/filtering")
     public String filtering(@ModelAttribute(FILTER_FORM_ATTR) NeedRequestFilterForm form,
                             RedirectAttributes redirectAttributes) {
-        redirectAttributes.addAllAttributes(NeedRequestHelper.createFilteringRedirectAttributes(form));
+        redirectAttributes.addAllAttributes(needRequestFilteringService.createFilteringRedirectAttributes(form));
         return REDIRECT_NEED_REQUEST_ALL;
     }
 
@@ -69,7 +71,7 @@ public class NeedRequestController {
         if (br.hasErrors()) {
             return processFormWithErrors(redirectAttributes, values,
                     Map.of(NEW_HAS_ERRORS_ATTR, true, NEW_NEED_REQUEST_ATTR, needRequestForm,
-                            BindingResult.MODEL_KEY_PREFIX+NEW_NEED_REQUEST_ATTR, br));
+                            BindingResult.MODEL_KEY_PREFIX + NEW_NEED_REQUEST_ATTR, br));
         } else {
             return processFormWithoutErrors(needRequestForm, redirectAttributes, values, createNewNeedRequestConsumer);
         }
@@ -84,7 +86,7 @@ public class NeedRequestController {
         if (br.hasErrors()) {
             return processFormWithErrors(redirectAttributes, requestValues,
                     Map.of(HAS_ERRORS_ATTR, true, EDIT_NEED_REQUEST_ATTR, needRequestForm,
-                            BindingResult.MODEL_KEY_PREFIX+ EDIT_NEED_REQUEST_ATTR, br));
+                            BindingResult.MODEL_KEY_PREFIX + EDIT_NEED_REQUEST_ATTR, br));
         } else {
             return processFormWithoutErrors(needRequestForm, redirectAttributes, requestValues, updateNeedRequestConsumer);
         }
@@ -96,7 +98,7 @@ public class NeedRequestController {
                                             BiConsumer<NeedRequestService, NeedRequestForm> consumer) {
 
         consumer.accept(needRequestService, needRequestForm);
-        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        redirectAttributes.addAllAttributes(needRequestFilteringService.filterAttributes(requestValues));
         return REDIRECT_NEED_REQUEST_ALL;
     }
 
@@ -104,9 +106,8 @@ public class NeedRequestController {
                                          Map<String, String> requestValues,
                                          Map<String, ?> errorRelatedEntries) {
 
-        errorRelatedEntries.entrySet().stream()
-                .forEach(stringEntry -> redirectAttributes.addFlashAttribute(stringEntry.getKey(), stringEntry.getValue()));
-        redirectAttributes.addAllAttributes(NeedRequestHelper.filterAttributes(requestValues));
+        errorRelatedEntries.forEach(redirectAttributes::addFlashAttribute);
+               redirectAttributes.addAllAttributes(needRequestFilteringService.filterAttributes(requestValues));
         return REDIRECT_NEED_REQUEST_ALL;
     }
 
@@ -115,20 +116,14 @@ public class NeedRequestController {
                                       @RequestParam Map<String, String> values) {
 
         NeedRequestForm newForm = (NeedRequestForm) model.asMap().get(NEW_NEED_REQUEST_ATTR);
-        if (newForm == null) {
-            model.addAttribute(NEW_NEED_REQUEST_ATTR, new NeedRequestForm());
-        } else {
-            model.addAttribute(NEW_NEED_REQUEST_ATTR, newForm);
-        }
+        model.addAttribute(NEW_NEED_REQUEST_ATTR, newForm == null ? new NeedRequestForm() : newForm);
+
         NeedRequestForm editForm = (NeedRequestForm) model.asMap().get(EDIT_NEED_REQUEST_ATTR);
-        if (editForm == null) {
-            model.addAttribute(EDIT_NEED_REQUEST_ATTR, new NeedRequestForm());
-        } else {
-            model.addAttribute(EDIT_NEED_REQUEST_ATTR, editForm);
-        }
-        NeedRequestFilterForm needRequestFilterForm = NeedRequestHelper.addFilteringForm(values);
+        model.addAttribute(EDIT_NEED_REQUEST_ATTR, editForm == null ? new NeedRequestForm() : editForm);
+
+        NeedRequestFilterForm needRequestFilterForm = needRequestFilteringService.addFilteringForm(values);
         model.addAttribute(FILTER_FORM_ATTR, needRequestFilterForm);
-        addCommonModelAttributes(model, NeedRequestHelper.filterAttributes(values),
+        addCommonModelAttributes(model, needRequestFilteringService.filterAttributes(values),
                 needRequestFilterForm);
         return NEED_REQUEST_LIST_VIEW;
     }
@@ -159,7 +154,7 @@ public class NeedRequestController {
     }
 
     private String getTestViewWithPageUnderConstructionMessage(Model model) {
-       // redirectAttributes.addFlashAttribute("message", "This page is under construction...");
+        // redirectAttributes.addFlashAttribute("message", "This page is under construction...");
         return REDIRECT_NEED_REQUEST_ALL;
     }
 }

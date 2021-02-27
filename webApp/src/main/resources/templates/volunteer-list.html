@@ -86,20 +86,20 @@
                                 </div>
                                 <div class=" comments">
                                     <i class="fa fa-comment-o"></i>
-                                    <a th:href="@{/volunteer/view/{id}#comments(id=${volunteer.uuid})}"
+                                    <a
                                        class="table-link"
                                        data-toggle="tooltip" data-placement="top" th:title="#{tooltip.add}">20</a>
                                 </div>
                             </div>
                             <div class="justify-content-end">
-                                <a th:href="@{/volunteer/assign/{id}(id=${volunteer.uuid})}" class="table-link"
+                                <a  class="table-link"
                                    data-toggle="tooltip" data-placement="top" th:title="#{tooltip.assign}">
 									<span class="fa-stack">
 										<i class="fa fa-square fa-stack-2x"></i>
 										<i class="fa fa-user-plus fa-stack-1x fa-inverse"></i>
 									</span>
                                 </a>
-                                <a th:href="@{/volunteer/view/{id}(id=${volunteer.uuid})}" class="table-link"
+                                <a  class="table-link"
                                    data-toggle="tooltip" data-placement="top" th:title="#{tooltip.view}">
 									<span class="fa-stack">
 										<i class="fa fa-square fa-stack-2x"></i>
@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a th:href="@{/volunteer/delete/{id}(id=${volunteer.uuid})}"
+                                <a
                                    class="table-link danger"
                                    data-toggle="tooltip" data-placement="top" th:title="#{tooltip.delete}">
 									<span class="fa-stack">

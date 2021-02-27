@@ -92,14 +92,14 @@
                                 </div>
                             </div>
                             <div class="justify-content-end">
-                                <a th:href="@{/need-request/assign/{id}(id=${needRequest.uuid})}" class="table-link"
+                                <a  class="table-link"
                                    data-toggle="tooltip" data-placement="top" th:title="#{tooltip.assign}">
 									<span class="fa-stack">
 										<i class="fa fa-square fa-stack-2x"></i>
 										<i class="fa fa-user-plus fa-stack-1x fa-inverse"></i>
 									</span>
                                 </a>
-                                <a th:href="@{/need-request/view/{id}(id=${needRequest.uuid})}" class="table-link"
+                                <a  class="table-link"
                                    data-toggle="tooltip" data-placement="top" th:title="#{tooltip.view}">
 									<span class="fa-stack">
 										<i class="fa fa-square fa-stack-2x"></i>
@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a th:href="@{/need-request/delete/{id}(id=${needRequest.uuid})}"
+                                <a
                                    class="table-link danger"
                                    data-toggle="tooltip" data-placement="top" th:title="#{tooltip.delete}">
 									<span class="fa-stack">
