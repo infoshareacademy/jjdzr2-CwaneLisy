@@ -1,4 +1,4 @@
-package com.infoshare.util;
+package com.infoshare.filteringservice;
 
 import com.infoshare.dto.NeedRequestFilterForm;
 import org.springframework.stereotype.Service;
@@ -9,9 +9,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class NeedRequestFilteringService {
-
-    private NeedRequestFilteringService() {
-    }
 
     public static final String FILTER_HELP_STATUSES = "filterHelpStatuses";
     public static final String FILTER_TYPE_OF_HELPS = "filterTypeOfHelps";

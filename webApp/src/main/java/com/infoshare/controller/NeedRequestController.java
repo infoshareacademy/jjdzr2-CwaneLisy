@@ -3,7 +3,7 @@ package com.infoshare.controller;
 import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.formobjects.NeedRequestForm;
 import com.infoshare.service.NeedRequestService;
-import com.infoshare.util.NeedRequestFilteringService;
+import com.infoshare.filteringservice.NeedRequestFilteringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

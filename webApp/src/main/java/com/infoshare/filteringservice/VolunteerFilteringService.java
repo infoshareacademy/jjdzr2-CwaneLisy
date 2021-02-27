@@ -1,4 +1,4 @@
-package com.infoshare.util;
+package com.infoshare.filteringservice;
 
 import com.infoshare.dto.VolunteerFilterForm;
 import org.springframework.stereotype.Service;

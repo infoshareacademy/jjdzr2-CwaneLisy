@@ -3,7 +3,7 @@ package com.infoshare.controller;
 import com.infoshare.dto.VolunteerFilterForm;
 import com.infoshare.formobjects.VolunteerForm;
 import com.infoshare.service.VolunteerService;
-import com.infoshare.util.VolunteerFilteringService;
+import com.infoshare.filteringservice.VolunteerFilteringService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
