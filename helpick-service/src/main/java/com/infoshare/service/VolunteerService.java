@@ -1,17 +1,25 @@
 package com.infoshare.service;
 
 import com.infoshare.database.DB;
+import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.domain.Volunteer;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.infoshare.dto.NeedRequestFilterForm;
+import com.infoshare.dto.VolunteerFilterForm;
+import com.infoshare.dto.VolunteerListObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class VolunteerService {
 
     DB db;
@@ -21,22 +29,61 @@ public class VolunteerService {
         this.db = db;
     }
 
+    private VolunteerListObject convertToVolunteerForm(Volunteer volunteer) {
+        return VolunteerListObject.VolunteerListObjectBuilder.aVolunteerListObject()
+                .withUuid(volunteer.getUuid())
+                .withName(volunteer.getName())
+                .withPhone(volunteer.getPhone())
+                .withEmail(volunteer.getEmail())
+                .withLocation(volunteer.getLocation())
+                .withTypeOfHelp(volunteer.getTypeOfHelp())
+                .withIsAvailable(volunteer.isAvailable())
+                .build();
+    }
+    private boolean filterTypeOfHelp(VolunteerFilterForm volunteerFilterForm, Volunteer volunteer) {
+        return (volunteerFilterForm.getTypeOfHelps() == null || volunteerFilterForm.getTypeOfHelps().isEmpty()) || volunteerFilterForm.getTypeOfHelps().stream()
+                .anyMatch(typeOfHelp -> volunteer.getTypeOfHelp().equals(typeOfHelp));
+    }
+    private boolean filterLocation(VolunteerFilterForm volunteerFilterForm, Volunteer volunteer) {
+        return (volunteerFilterForm.getLocation() == null || volunteerFilterForm.getLocation().isEmpty()) || volunteer.getLocation().equalsIgnoreCase(volunteerFilterForm.getLocation());
+    }
+    private boolean filterFreeText(VolunteerFilterForm volunteerFilterForm, Volunteer volunteer) {
+        return (volunteerFilterForm.getFreeText() == null || volunteerFilterForm.getFreeText().isEmpty()) ||
+                volunteer.getName().toLowerCase().contains(volunteerFilterForm.getFreeText().toLowerCase()) ||
+                volunteer.getLocation().toLowerCase().contains(volunteerFilterForm.getFreeText().toLowerCase()) ||
+                volunteer.getPhone().contains(volunteerFilterForm.getFreeText());
+    }
+    private boolean filterAvailability(VolunteerFilterForm volunteerFilterForm, Volunteer volunteer) {
+        if(!volunteer.isAvailable() && volunteerFilterForm.isAvailable()){
+            return false;
+        }else{
+          return true;
+        }
+    }
+
+    public List<VolunteerListObject> getVolunteerFilteredList(VolunteerFilterForm volunteerFilterForm) {
+        List<VolunteerListObject> volunteerListObjects = db.getVolunteers().stream()
+                .filter(volunteer -> filterTypeOfHelp(volunteerFilterForm, volunteer))
+                .filter(volunteer -> filterLocation(volunteerFilterForm, volunteer))
+                .filter(volunteer -> filterFreeText(volunteerFilterForm, volunteer))
+                .filter(volunteer -> filterAvailability(volunteerFilterForm,volunteer))
+                .map(this::convertToVolunteerForm)
+                .collect(Collectors.toList());
+
+        log.info("For following query params {} found {} records", volunteerFilterForm, volunteerListObjects.size());
+        return volunteerListObjects;
+    }
+
     public List<Volunteer> getVolunteerFilteredList(String city, TypeOfHelp typeOfHelp) {
         return db.getVolunteers().stream()
-            .filter(Volunteer::isAvailable)
-            .filter(v -> v.getLocation().equalsIgnoreCase(city))
-            .filter(v -> v.getTypeOfHelp().equals(typeOfHelp))
-            .collect(Collectors.toList());
+                .filter(Volunteer::isAvailable)
+                .filter(v -> v.getLocation().equalsIgnoreCase(city))
+                .filter(v -> v.getTypeOfHelp().equals(typeOfHelp))
+                .collect(Collectors.toList());
     }
 
     public Volunteer searchForVolunteer(String email) {
         return db.getVolunteer(email);
-    }
-
-    public Optional<Volunteer>getVolunteerById(UUID uuid){
-      return db.getVolunteers().stream()
-          .filter(v->v.getUuid().equals(uuid))
-          .findAny();
     }
 
     public boolean updateAvailability(Volunteer volunteer) {
@@ -50,7 +97,7 @@ public class VolunteerService {
     }
 
     public boolean registerNewVolunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
-        boolean availability) {
+                                        boolean availability) {
         Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability, UUID.randomUUID());
         if (db.getVolunteer(newVolunteer.getEmail()) == null) {
             db.saveVolunteer(newVolunteer);
@@ -59,12 +106,9 @@ public class VolunteerService {
             return false;
         }
     }
+
     public List<TypeOfHelp> getTypesOfHelp() {
         return Arrays.asList(TypeOfHelp.values());
-    }
-
-    public List<Volunteer> getAllVolunteers() {
-        return db.getVolunteers();
     }
 
     public boolean editVolunteerData(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,

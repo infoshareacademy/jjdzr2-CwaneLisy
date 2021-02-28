@@ -6,30 +6,30 @@ import com.infoshare.util.ValidatorEnum;
 import com.infoshare.validator.RegExpPattern;
 import com.infoshare.validator.UniqueMailAndUuid;
 
-import javax.validation.constraints.Size;
 import java.util.UUID;
 
 @UniqueMailAndUuid
 public class VolunteerForm {
     @RegExpPattern(regexp = ValidatorEnum.POLISHSIGNS)
-    @Size(min = 2, max = 20)
     private String name;
-    @Size(min = 2, max = 20)
     @RegExpPattern(regexp = ValidatorEnum.POLISHSIGNS)
     private String location;
-    @Size(min = 2, max = 20)
     @RegExpPattern(regexp = ValidatorEnum.EMAIL)
     private String email;
-    @Size(min = 2, max = 20)
     @RegExpPattern(regexp = ValidatorEnum.PHONENUMBER)
     private String phone;
     private TypeOfHelp typeOfHelp;
     private boolean isAvailable;
     private UUID uuid;
 
-    public VolunteerForm(){}
+    public void setAvailable(boolean available) {
+        isAvailable = available;
+    }
 
-    public VolunteerForm(Volunteer volunteer){
+    public VolunteerForm() {
+    }
+
+    public VolunteerForm(Volunteer volunteer) {
         this.name = volunteer.getName();
         this.location = volunteer.getLocation();
         this.email = volunteer.getEmail();
@@ -78,7 +78,9 @@ public class VolunteerForm {
         this.typeOfHelp = typeOfHelp;
     }
 
-    public boolean isAvailable() { return isAvailable; }
+    public boolean isAvailable() {
+        return isAvailable;
+    }
 
     public UUID getUuid() {
         return uuid;

@@ -2,14 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
-    <title th:text="#{needRequestList.title}"></title>
+    <title th:text="#{volunteerList.title}"></title>
 </head>
 <body>
-<section>
+<section >
     <div class="container-lg navbarSpacing" layout:fragment="content">
         <div class="fixed-bottom bottom-right adder">
             <div class="float-right">
-                <span class="adder-link" data-toggle="modal" data-target="#newNeedRequestForm">
+                <span class="adder-link" data-toggle="modal" data-target="#newVolunteerForm">
                     <div class="row bg-white rounded-pill border border-info shadow mb-4 mr-4">
                         <div class="col-sm-2 d-flex align-items-center m-1">
                             <i class="fa fa-plus" aria-hidden="true"></i><span class="ml-2" th:text="#{basicForm.add}"></span>
@@ -18,24 +18,24 @@
                 </span>
             </div>
         </div>
-        <div class="modal fade" id="newNeedRequestForm" role="dialog" th:attrappend="data-backdrop=${newHasErrors == true} ? static">
+        <div class="modal fade" id="newVolunteerForm" role="dialog" th:attrappend="data-backdrop=${newHasErrors == true} ? static">
             <div class="modal-dialog">
                 <div class="modal-content has-shadow">
                     <div class="modal-header">
-                        <span class="text-light" th:text="#{needRequestForm.addTitle}"/>
+                        <span class="text-light" th:text="#{volunteerForm.addTitle}"/>
                         <a class="text-light" href="#" data-dismiss="modal">
                             <i class="fa fa-times" aria-hidden="true"></i>
                         </a>
                     </div>
                     <div class="modal-body"
-                         th:insert="/fragments/need-request-new-form.html :: edit-form(${newActionUrl})">
+                         th:insert="/fragments/volunteer-new-form.html :: edit-form(${newActionUrl})">
                     </div>
                     <script th:inline="javascript"
                             th:if="${newHasErrors==true}">
                         jQuery(function ($) {
                             $(document).ready(function () {
 
-                                    $("#newNeedRequestForm").modal("show");
+                                $("#newVolunteerForm").modal("show");
                             });
                         });
                     </script>
@@ -44,27 +44,27 @@
         </div>
         <div class="row bg-white border-rounded shadow leftBorder breadcrumb">
             <div class="col-sm-12 d-flex align-items-center">
-                <i class="fa fa-caret-right" aria-hidden="true"></i><span class="ml-2" th:text="#{needRequestList.title}"></span>
+                <i class="fa fa-caret-right" aria-hidden="true"></i><span class="ml-2" th:text="#{volunteerList.title}"></span>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-2 bg-white border-rounded shadow leftBorder filter-panel"
-                 th:insert="/fragments/need-request-filter-panel.html :: filter-panel">
+                 th:insert="/fragments/volunteer-filter-panel.html :: filter-panel">
             </div>
             <div class="col-sm-10 pr-0">
-                <div class="need-request" th:each="needRequest: ${needRequestsList}">
+                <div class="need-request" th:each="volunteer: ${volunteerList}">
                     <div class="row bg-white border-rounded shadow leftBorder">
                         <div class="left-col col-lg-6 d-flex align-items-center justify-content-between">
                             <div class="need-request-title d-flex align-items-center">
                                 <div class="text">
-                                    <a th:href="@{/need-request/view/{id}(id=${needRequest.uuid})}" class="header-link">
-                                        <h3 class="h4" th:text="${needRequest.name}"></h3>
+                                    <a th:href="@{/volunteer/view/{id}(id=${volunteer.uuid})}" class="header-link">
+                                        <h3 class="h4" th:text="${volunteer.name}"></h3>
                                     </a>
-                                    <small th:text="${needRequest.location}"></small>
+                                    <small th:text="${volunteer.location}"></small>
                                 </div>
                             </div>
                             <div class="need-request-date d-flex align-items-center justify-content-end">
-                        <span class="hidden-sm-down pr-3" th:text="${needRequest.typeOfHelp.type}">
+                        <span class="hidden-sm-down pr-3" th:text="${volunteer.typeOfHelp.type}">
 
                         </span>
                             </div>
@@ -75,18 +75,18 @@
                                     <div>
                                         <i class="fa fa-clock-o"></i>
                                         <span class="font-weight-bold"
-                                              th:text="${#dates.format(needRequest.statusChange, 'dd.MM.yyyy')}"></span>
+                                              ></span>
                                         <small class="ml-1"
-                                               th:text="${#dates.format(needRequest.statusChange, 'HH:mm')}"></small>
+                                               ></small>
                                     </div>
                                     <div class="justify-content-center d-flex text-white border-rounded"
-                                         th:classappend="${needRequest.helpStatus==T(com.infoshare.domain.HelpStatuses).NEW ? 'bg-green ' : (needRequest.helpStatus==T(com.infoshare.domain.HelpStatuses).INPROGRESS ? 'bg-orange' : 'bg-blue')}">
-                                        <small th:text="${needRequest.helpStatus.status}"></small>
+                                         >
+                                        <small ></small>
                                     </div>
                                 </div>
                                 <div class=" comments">
                                     <i class="fa fa-comment-o"></i>
-                                    <a th:href="@{/need-request/view/{id}#comments(id=${needRequest.uuid})}"
+                                    <a
                                        class="table-link"
                                        data-toggle="tooltip" data-placement="top" th:title="#{tooltip.add}">20</a>
                                 </div>
@@ -109,29 +109,29 @@
                                 <span class="table-link"
                                       data-toggle="tooltip" data-placement="top" th:title="#{tooltip.edit}">
 									<span class="fa-stack" data-toggle="modal" data-target="#myModal"
-                                          th:attrappend="data-target=${needRequest.uuid}">
+                                          th:attrappend="data-target=${volunteer.uuid}">
 										<i class="fa fa-square fa-stack-2x"></i>
 										<i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
 									</span>
                         </span>
                                 <div class="modal fade" id="myModal" role="dialog"
-                                     th:attrappend="id=${needRequest.uuid}, data-backdrop=${hasErrors == true && needRequest.uuid==editNeedRequest.uuid} ? static">
+                                     th:attrappend="id=${volunteer.uuid}">
                                     <div class="modal-dialog">
                                         <div class="modal-content has-shadow">
                                             <div class="modal-header">
-                                                <span class="text-light" th:text="#{needRequestForm.editTitle}"/>
+                                                <span class="text-light" th:text="#{volunteerForm.editTitle}"/>
                                                 <a class="text-light" href="#" data-dismiss="modal">
                                                     <i class="fa fa-times" aria-hidden="true"></i>
                                                 </a>
                                             </div>
                                             <div class="modal-body"
-                                                 th:insert="/fragments/need-request-edit-form.html :: edit-form(${actionUrl})">
+                                                 th:insert="/fragments/volunteer-edit-form :: volunteer-form">
                                             </div>
                                             <script th:inline="javascript"
-                                                    th:if="${hasErrors==true && needRequest.uuid==editNeedRequest.uuid}">
+                                                    th:if="${hasErrors==true && volunteer.uuid==editVolunteer.uuid}">
                                                 jQuery(function ($) {
                                                     $(document).ready(function () {
-                                                        var uuid = /*[[${editNeedRequest.uuid}]]*/
+                                                        var uuid = /*[[${editVolunteer.uuid}]]*/
                                                             $("#myModal".concat(uuid)).modal("show");
                                                     });
                                                 });

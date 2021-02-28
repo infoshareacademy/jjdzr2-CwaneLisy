@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="filter-panel">
+    <h5 class="pr-2 pl-2"><i class="fa fa-filter"></i><span class="ml-1" th:text="#{filterPanel.title}"/></h5>
+    <hr>
+    <div class="pr-2 pl-2">
+        <form class="form-horizontal w-100" th:action="@{/need-request/filtering}" method="post"
+              th:object="${filterForm}">
+            <div id="free-text">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" name="filterFreeText" th:field="*{freeText}"
+                           th:placeholder="#{filterPanel.search}"/>
+                </div>
+            </div>
+            <hr>
+            <div id="location">
+                <div class="input-group input-group-sm">
+                    <input type="text" class="form-control" name="filterLocation" th:field="*{location}"
+                           th:placeholder="#{filterPanel.city}"/>
+                </div>
+            </div>
+            <hr>
+            <div class="mt-1"><h6 class="mb-0" th:text="#{filterPanel.startDate}"></h6></div>
+            <div class="input-group input-group-sm">
+                <input type="date" class="form-control input-sm" name="filterStartDate"
+                       th:field="*{startDate}"/>
+            </div>
+            <div class="mt-2"><h6 class="mb-0" th:text="#{filterPanel.endDate}"></h6></div>
+            <div class="input-group input-group-sm">
+                <input type="date" class="form-control input-sm" name="filterEndDate" th:field="*{endDate}"/>
+            </div>
+            <hr>
+
+            <div class="mt-1"><h6 th:text="#{basicForm.typeOfHelp}"></h6></div>
+
+                <div class="form-check" th:each="typeOfHelp: ${types}">
+                    <input type="checkbox" class="form-check-input position-static"
+                           th:value="${typeOfHelp}"
+                           th:field="*{typeOfHelps}"
+                    />
+                    <label class="form-check-label" th:text="${typeOfHelp.type}">
+                    </label>
+                </div>
+
+            <hr>
+            <div class="mt-3"><h6 th:text="#{filterPanel.status}"></h6></div>
+            <div id="status-of-request" th:each="statusOfRequest: ${statusesOfHelp}">
+                <div class="form-check ">
+                    <input type="checkbox" class="form-check-input position-static"
+                           th:value="${statusOfRequest}"
+                           th:field="*{helpStatuses}"
+                    />
+                    <label class="form-check-label" th:text="${statusOfRequest.status}">
+                    </label>
+                </div>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-info btn-sm" type="submit" th:text="#{filterPanel.filter}"></button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

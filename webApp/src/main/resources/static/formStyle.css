@@ -7,8 +7,6 @@
     background-size: cover;
 }
 .errorClass {
-    width: 100%;
-    float: right;
     text-align: right;
     color: red;
     font-size: 0.75em;
@@ -18,7 +16,7 @@
     margin-top: 80px;
 }
 .custom-select,
-.input-group .form-control{
+.form-group .form-control{
     font-size: 0.9em;
 }
 .border-rounded{
@@ -36,15 +34,10 @@ form {
     font-size: 0.9em;
 }
 label {
-    float: left;
-    width: 200px;
-    padding-right: 24px;
     margin-top: 10px;
 }
 
 input,select{
-    float: left;
-    width: 200px;
     margin-top: 10px;
 }
 
@@ -55,7 +48,26 @@ input,select{
 
 }
 .body-background{
-    background: #a0a7be;
+    background: #f2f3f7;
+}
+
+.navbar{
+    padding: 0px;
+    min-height: 50px;
+}
+.navbar .nav-link {
+    font-family: 'Oswald',Arial,sans-serif;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: white !important;
+}
+
+.nav-link {
+    margin-left: 1em;
+}
+
+.navbar-brand {
+    padding-left: 2em;
 }
 
 .fluidBox{
@@ -63,6 +75,8 @@ input,select{
     margin-left: auto;
     margin-right: auto;
 }
+
+.modal-content,
 .fluidBox .card{
     border: 0px;
 }
@@ -85,16 +99,24 @@ body{
     background:#eee;
 }
 
-
+.filter-panel,
 .need-request > .row {
     margin: 0;
     padding: 15px 0;
-    margin-bottom: 15px
+    margin-bottom: 15px;
 }
 
 .need-request div[class*='col-'] {
     border-right: 1px solid #eee
 }
+.filter-panel {
+    color: #555
+}
+
+.nav-link:hover {
+    color: cyan;
+}
+
 
 .need-request .text h3 {
     margin-bottom: 0;
@@ -122,6 +144,8 @@ body{
     transform: rotate(-15deg);
 }
 
+
+.filter-panel label,
 .form-group label,
 .need-request .need-request-date span {
     font-size: 0.9em;
@@ -159,6 +183,7 @@ body{
 .need-request .need-request-progress i {
     margin-right: 5px
 }
+
 .need-request a.header-link {
     color: #999;
 }
@@ -292,10 +317,34 @@ body{
     border-left: 2px solid #4dbd74
 }
 
-.need-request .leftBorder {
-    border-left: 4px solid green
+
+.leftBorder {
+    border-left: 4px solid darkcyan;
 }
 
 .border-rounded {
     border-radius: 3px;
+}
+
+.breadcrumb {
+    padding: 5px 0px 5px 0px;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.breadcrumb .fa-caret-right {
+    font-size: 30px;
+}
+
+.adder-link{
+    color: darkcyan;
+}
+
+.adder-link:hover{
+    color: darkcyan;
+    text-decoration: none;
+}
+
+.bottom-right {
+    left: unset;
 }

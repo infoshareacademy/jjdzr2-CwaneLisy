@@ -43,7 +43,7 @@ public class Volunteer {
     return uuid;
   }
 
-  @Override  //TODO zrobic toString to itsAvalibe
+  @Override
     public String toString() {
         return "Volunteer{" + "name='" + name + '\'' + ", location='" + location + '\'' + ", email='" + email + '\''
             + ", phone='" + phone + '\'' + ", typeOfHelp='" + typeOfHelp + '\'' + ", isAvailable=" + isAvailable + '}';
