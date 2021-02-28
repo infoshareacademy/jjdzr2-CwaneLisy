@@ -1,5 +1,7 @@
 package com.infoshare.dto;
 
+import com.infoshare.domain.HelpStatuses;
+import com.infoshare.domain.TypeOfHelp;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +49,7 @@ void shouldCreateFilteringFormWithCorrectStartDate(){
               .withTypeOfHelps(typesOfHelp)
               .build();
       //then
-      assertThat(needRequestFilterForm.getTypeOfHelps()).hasSize(2);
+      assertThat(needRequestFilterForm.getTypeOfHelps()).hasSize(2).containsExactlyInAnyOrder(TypeOfHelp.SHOPPING,TypeOfHelp.WALKING_THE_DOG);
    }
    @Test
    void shouldCreateFilteringFormWithNullTypesOfHelp(){
@@ -114,7 +116,7 @@ void shouldCreateFilteringFormWithCorrectStartDate(){
               .withHelpStatuses(helpStatuses)
               .build();
       //then
-      assertThat(needRequestFilterForm.getHelpStatuses()).hasSize(2);
+      assertThat(needRequestFilterForm.getHelpStatuses()).hasSize(2).containsExactlyInAnyOrder(HelpStatuses.NEW, HelpStatuses.INPROGRESS);
    }
    @Test
    void shouldCreateFilteringFormWithNullHelpStatuses(){
