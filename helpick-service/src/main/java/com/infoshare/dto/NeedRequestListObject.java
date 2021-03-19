@@ -1,5 +1,6 @@
 package com.infoshare.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.TypeOfHelp;
 
@@ -15,7 +16,20 @@ public class NeedRequestListObject {
     private TypeOfHelp typeOfHelp;
     private UUID uuid;
     private HelpStatuses helpStatus;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date statusChange;
+
+    @Override
+    public String toString() {
+        return "NeedRequestListObject{" +
+                "name='" + name + '\'' +
+                ", location='" + location + '\'' +
+                ", phone='" + phone + '\'' +
+                ", typeOfHelp=" + typeOfHelp +
+                ", helpStatus=" + helpStatus +
+                ", statusChange=" + statusChange +
+                '}';
+    }
 
     public HelpStatuses getHelpStatus() {
         return helpStatus;
