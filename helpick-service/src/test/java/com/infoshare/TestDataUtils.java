@@ -17,16 +17,15 @@ public class TestDataUtils {
 
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static List<NeedRequestListObject> getNeedRequestListObject(String fileName){
-        List<NeedRequestListObject>returnList = new ArrayList<>();
+    public static List<NeedRequestListObject> getNeedRequestListObject(String fileName) {
+        List<NeedRequestListObject> needRequestListObjects = new ArrayList<>();
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            returnList = Arrays.asList(objectMapper.readValue(new File(TestDataUtils.class.getClassLoader().getResource(fileName).getFile()), NeedRequestListObject[].class));
+            needRequestListObjects = Arrays.asList(objectMapper.readValue(new File(TestDataUtils.class.getClassLoader().getResource(fileName).getFile()), NeedRequestListObject[].class));
         } catch (IOException e) {
             System.out.println("Nie udało się wczytać pliku");
-            System.exit(0);
         }
-        return returnList;
+        return needRequestListObjects;
     }
 
     public static List<NeedRequest> getNeedRequests() {

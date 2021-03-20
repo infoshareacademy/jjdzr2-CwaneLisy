@@ -50,7 +50,7 @@ class NeedRequestServiceTest {
         List<NeedRequestListObject> needRequestListObjects = needRequestService.getRequestFilteredList(needRequestFilterForm);
 
         //THEN
-        assertThat(needRequestListObjects).hasSize(47).containsAll(allNeedRequests);
+        assertThat(needRequestListObjects).hasSize(allNeedRequests.size()).containsAll(allNeedRequests);
     }
 
     @Test
