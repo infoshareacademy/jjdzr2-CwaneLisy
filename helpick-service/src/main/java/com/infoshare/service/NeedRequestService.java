@@ -9,6 +9,7 @@ import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.dto.NeedRequestListObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -24,9 +25,7 @@ public class NeedRequestService {
     DB db;
 
     @Autowired
-    public NeedRequestService(DB db) {
-        this.db = db;
-    }
+    public NeedRequestService(@Qualifier("FileDb") DB db) { this.db = db; }
 
     public List<NeedRequestListObject> getRequestFilteredList(NeedRequestFilterForm needRequestFilterForm) {
         List<NeedRequestListObject> needRequestListObjects = db.getNeedRequests().stream()

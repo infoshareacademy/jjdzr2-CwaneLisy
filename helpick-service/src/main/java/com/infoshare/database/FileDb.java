@@ -1,6 +1,7 @@
 package com.infoshare.database;
 
 import com.infoshare.domain.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
+@Qualifier ("FileDb")
 public class FileDb implements DB {
 
     private static final String VOLUNTEER_DB_FILE_NAME = "Volunteer.csv";

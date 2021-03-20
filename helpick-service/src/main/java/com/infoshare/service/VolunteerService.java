@@ -16,6 +16,7 @@ import com.infoshare.dto.VolunteerFilterForm;
 import com.infoshare.dto.VolunteerListObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,7 +26,7 @@ public class VolunteerService {
     DB db;
 
     @Autowired
-    public VolunteerService(DB db) {
+    public VolunteerService(@Qualifier ("RelationalDb") DB db) {
         this.db = db;
     }
 
