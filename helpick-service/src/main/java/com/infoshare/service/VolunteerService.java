@@ -1,7 +1,6 @@
 package com.infoshare.service;
 
 import com.infoshare.database.DB;
-import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.domain.Volunteer;
 
@@ -11,7 +10,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.dto.VolunteerFilterForm;
 import com.infoshare.dto.VolunteerListObject;
 import lombok.extern.slf4j.Slf4j;
@@ -99,7 +97,7 @@ public class VolunteerService {
 
     public boolean registerNewVolunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
                                         boolean availability) {
-        Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability, UUID.randomUUID());
+        Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability);
         if (db.getVolunteer(newVolunteer.getEmail()) == null) {
             db.saveVolunteer(newVolunteer);
             return true;

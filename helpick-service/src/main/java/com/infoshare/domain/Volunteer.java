@@ -26,13 +26,18 @@ public class Volunteer {
 
     public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
         boolean isAvailable, UUID uuid) {
+        this(name, location, email, phone, typeOfHelp, isAvailable);
+        this.uuid = uuid;
+    }
+
+    public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
+                     boolean isAvailable) {
         this.name = name;
         this.location = location;
         this.email = email;
         this.phone = phone;
         this.typeOfHelp = typeOfHelp;
         this.isAvailable = isAvailable;
-        this.uuid = uuid;
     }
 
     public Volunteer() {

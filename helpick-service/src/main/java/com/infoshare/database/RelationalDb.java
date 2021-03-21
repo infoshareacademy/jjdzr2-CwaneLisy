@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.management.Query;
-import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,7 +32,7 @@ public class RelationalDb implements DB {
 
     @Override
     public void saveVolunteerWithUuid(Volunteer volunteer) {
-
+        volunteerDao.update(volunteer);
     }
 
     @Override
@@ -65,6 +63,6 @@ public class RelationalDb implements DB {
 
     @Override
     public Optional<Volunteer> getVolunteer(UUID uuid) {
-        return Optional.empty();
+        return Optional.ofNullable(volunteerDao.find(uuid));
     }
 }

@@ -8,6 +8,7 @@ import javax.persistence.Query;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.UUID;
 
 @Transactional
 public class GenericDao<T> implements Dao<T> {
@@ -24,8 +25,10 @@ public class GenericDao<T> implements Dao<T> {
     }
 
     @Override
-    public T find(Long id) {
-        return entityManager.find(type, id);
+    public T find(UUID id) {
+        T obj = entityManager.find(type, id);
+        entityManager.persist(obj);
+        return obj;
     }
 
     @Override
