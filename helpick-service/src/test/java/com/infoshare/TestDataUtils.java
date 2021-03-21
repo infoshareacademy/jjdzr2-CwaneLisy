@@ -6,6 +6,7 @@ import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.PersonInNeed;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.dto.NeedRequestListObject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,19 +14,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Slf4j
 public class TestDataUtils {
 
     private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public static List<NeedRequestListObject> getNeedRequestListObject(String fileName) {
-        List<NeedRequestListObject> needRequestListObjects = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            needRequestListObjects = Arrays.asList(objectMapper.readValue(new File(TestDataUtils.class.getClassLoader().getResource(fileName).getFile()), NeedRequestListObject[].class));
-        } catch (IOException e) {
-            System.out.println("Nie udało się wczytać pliku");
-        }
-        return needRequestListObjects;
+    public static List<NeedRequestListObject> getNeedRequestListObject(String fileName) throws Exception {
+        return Arrays.asList(OBJECT_MAPPER.readValue(
+                new File(TestDataUtils.class.getClassLoader().getResource(fileName).getFile()), NeedRequestListObject[].class));
     }
 
     public static List<NeedRequest> getNeedRequests() {
@@ -43,7 +40,7 @@ public class TestDataUtils {
                 }
             }
         } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return result;
     }

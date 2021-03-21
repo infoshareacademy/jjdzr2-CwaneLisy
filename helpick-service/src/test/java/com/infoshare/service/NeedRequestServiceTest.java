@@ -2,7 +2,6 @@ package com.infoshare.service;
 
 import com.infoshare.TestDataUtils;
 import com.infoshare.database.DB;
-import com.infoshare.domain.HelpStatuses;
 import com.infoshare.domain.NeedRequest;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.dto.NeedRequestFilterForm;
@@ -10,9 +9,7 @@ import com.infoshare.dto.NeedRequestListObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -40,9 +37,9 @@ class NeedRequestServiceTest {
     }
 
     @Test
-    void shouldGetAllNeedRequest() {
+    void shouldGetAllNeedRequest() throws Exception {
         //GIVEN
-        List<NeedRequestListObject> allNeedRequests = TestDataUtils.getNeedRequestListObject("NeedRequestListObject.json");
+        List<NeedRequestListObject> allExpectedNeedRequests = TestDataUtils.getNeedRequestListObject("NeedRequestListObject.json");
         when(db.getNeedRequests()).thenReturn(TestDataUtils.getNeedRequests());
         NeedRequestFilterForm needRequestFilterForm = new NeedRequestFilterForm();
 
@@ -50,17 +47,16 @@ class NeedRequestServiceTest {
         List<NeedRequestListObject> needRequestListObjects = needRequestService.getRequestFilteredList(needRequestFilterForm);
 
         //THEN
-        assertThat(needRequestListObjects).hasSize(allNeedRequests.size()).containsAll(allNeedRequests);
+        assertThat(needRequestListObjects).hasSize(allExpectedNeedRequests.size()).containsAll(allExpectedNeedRequests);
     }
 
     @Test
-    void shouldGetNeedRequestsWithLocation() {
+    void shouldGetNeedRequestsWithLocation() throws Exception {
 
         //GIVEN
         List<NeedRequestListObject> allNeedRequests = TestDataUtils.getNeedRequestListObject("locationTestObjects.json");
         when(db.getNeedRequests()).thenReturn(TestDataUtils.getNeedRequests());
-        NeedRequestFilterForm needRequestFilterForm = new NeedRequestFilterForm();
-        needRequestFilterForm.setLocation("Gdynia");
+        NeedRequestFilterForm needRequestFilterForm = NeedRequestFilterForm.FilterFormBuilder.aFilterForm().withLocation("Gdynia").build();
 
         //WHEN
         List<NeedRequestListObject> needRequestListObjects = needRequestService.getRequestFilteredList(needRequestFilterForm);
@@ -70,16 +66,12 @@ class NeedRequestServiceTest {
     }
 
     @Test
-    void shouldGetNeedRequestsWithStartAndEndData() {
+    void shouldGetNeedRequestsWithStartAndEndData() throws Exception {
 
         //GIVEN
         List<NeedRequestListObject> expectedResult = TestDataUtils.getNeedRequestListObject("datesTestObjects.json");
-
         when(db.getNeedRequests()).thenReturn(TestDataUtils.getNeedRequests());
-
-        NeedRequestFilterForm needRequestFilterForm = new NeedRequestFilterForm();
-        needRequestFilterForm.setStartDate(LocalDate.parse("2021-02-02"));
-        needRequestFilterForm.setEndDate(LocalDate.parse("2021-02-03"));
+        NeedRequestFilterForm needRequestFilterForm = NeedRequestFilterForm.FilterFormBuilder.aFilterForm().withStartDate("2021-02-02").withEndDate("2021-02-03").build();
 
         //WHEN
         List<NeedRequestListObject> needRequestListObjects = needRequestService.getRequestFilteredList(needRequestFilterForm);
@@ -89,28 +81,26 @@ class NeedRequestServiceTest {
     }
 
     @Test
-    void shouldGetNeedRequestsWithHelpStatuses() {
+    void shouldGetNeedRequestsWithHelpStatuses() throws Exception {
 
         //GIVEN
         List<NeedRequestListObject> expectedResult = TestDataUtils.getNeedRequestListObject("helpStatusesTestObjects.json");
         when(db.getNeedRequests()).thenReturn(TestDataUtils.getNeedRequests());
-        NeedRequestFilterForm needRequestFilterForm = new NeedRequestFilterForm();
-        needRequestFilterForm.setHelpStatuses(Set.of(HelpStatuses.DONE));
+        NeedRequestFilterForm needRequestFilterForm = NeedRequestFilterForm.FilterFormBuilder.aFilterForm().withHelpStatuses("DONE").build();
 
         //WHEN
         List<NeedRequestListObject> needRequestListObjects = needRequestService.getRequestFilteredList(needRequestFilterForm);
 
         //THEN
         assertThat(needRequestListObjects).hasSize(4).containsAll(expectedResult);
-
     }
+
     @Test
-    void shouldGetNeedRequestsWithTypeOfHelp(){
+    void shouldGetNeedRequestsWithTypeOfHelp() throws Exception {
         //GIVEN
         List<NeedRequestListObject> expectedResult = TestDataUtils.getNeedRequestListObject("typesOfHelpTestObjects.json");
         when(db.getNeedRequests()).thenReturn(TestDataUtils.getNeedRequests());
-        NeedRequestFilterForm needRequestFilterForm = new NeedRequestFilterForm();
-        needRequestFilterForm.setTypeOfHelps(Set.of(TypeOfHelp.SHOPPING));
+        NeedRequestFilterForm needRequestFilterForm = NeedRequestFilterForm.FilterFormBuilder.aFilterForm().withTypeOfHelps("SHOPPING").build();
 
         //WHEN
         List<NeedRequestListObject> needRequestListObjects = needRequestService.getRequestFilteredList(needRequestFilterForm);
