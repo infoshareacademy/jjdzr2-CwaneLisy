@@ -31,11 +31,6 @@ public class RelationalDb implements DB {
     }
 
     @Override
-    public void saveVolunteerWithUuid(Volunteer volunteer) {
-        volunteerDao.update(volunteer);
-    }
-
-    @Override
     public List<Volunteer> getVolunteers() {
         return (List<Volunteer>) volunteerDao.findAll();
     }

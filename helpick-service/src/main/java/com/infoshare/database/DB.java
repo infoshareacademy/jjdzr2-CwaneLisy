@@ -11,8 +11,6 @@ public interface DB {
 
     void saveVolunteer(Volunteer volunteer);
 
-    void saveVolunteerWithUuid(Volunteer volunteer);
-
     List<Volunteer> getVolunteers();
 
     void saveNeedRequest(NeedRequest needRequest);

@@ -24,14 +24,16 @@ public class NeedRequest {
     )
     private UUID uuid;
 
+    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed, UUID uuid){
+        this(typeOfHelp, helpStatus, statusChange,personInNeed);
+        this.uuid = uuid;
+    }
 
-    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed,
-                       UUID uuid) {
+    public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed) {
         this.typeOfHelp = typeOfHelp;
         this.helpStatus = helpStatus;
         this.statusChange = statusChange;
         this.personInNeed = personInNeed;
-        this.uuid = uuid;
     }
 
     public NeedRequest() {
@@ -39,11 +41,15 @@ public class NeedRequest {
     }
 
     public static NeedRequest create(TypeOfHelp typeOfHelp, PersonInNeed personInNeed) {
-        return new NeedRequest(typeOfHelp, HelpStatuses.NEW, new Date(), personInNeed, UUID.randomUUID());
+        return new NeedRequest(typeOfHelp, HelpStatuses.NEW, new Date(), personInNeed);
     }
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public TypeOfHelp getTypeOfHelp() {

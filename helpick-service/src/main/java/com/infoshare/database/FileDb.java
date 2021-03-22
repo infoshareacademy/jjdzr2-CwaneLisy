@@ -41,40 +41,9 @@ public class FileDb implements DB {
 
     @Override
     public void saveVolunteer(Volunteer volunteer) {
-        try {
-            if (getVolunteer(volunteer.getEmail()) == null) {
-                try (FileWriter fileWriter = new FileWriter(VOLUNTEER_DB_FILE_NAME, true)) {
-                    fileWriter.write(
-                            volunteer.getName() + "," + volunteer.getLocation() + "," + volunteer.getEmail() + ","
-                                    + volunteer.getPhone() + "," + volunteer.getTypeOfHelp() + "," + volunteer.isAvailable()
-                                    + "," + volunteer.getUuid() + "\n");
-                }
-            } else {
-                List<Volunteer> allVolunteers = getVolunteers();
-                int index = -1;
-                for (int i = 0; i < allVolunteers.size(); i++) {
-                    Volunteer v = allVolunteers.get(i);
-                    if (v.getEmail().equals(volunteer.getEmail())) {
-                        index = i;
-                    }
-                }
-                allVolunteers.set(index, volunteer);  // gdy chce usunac .remove
-                try (FileWriter writer = new FileWriter(VOLUNTEER_DB_FILE_NAME, false)) {
-                    for (Volunteer v : allVolunteers) {
-                        writer.write(
-                                v.getName() + "," + v.getLocation() + "," + v.getEmail() + "," + v.getPhone() + "," + v
-                                        .getTypeOfHelp() + "," + v.isAvailable() + "," + v.getUuid() + "\n");
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(volunteer.getUuid() == null){
+            volunteer.setUuid(UUID.randomUUID());
         }
-
-    }
-
-    @Override
-    public void saveVolunteerWithUuid(Volunteer volunteer) {
         List<Volunteer> allVolunteers = getVolunteers();
         boolean isNewVolunteer = true;
         for (int i = 0; i < allVolunteers.size(); i++) {
@@ -93,6 +62,9 @@ public class FileDb implements DB {
 
     @Override
     public void saveNeedRequest(NeedRequest needRequest) {
+        if(needRequest.getUuid() == null){
+            needRequest.setUuid(UUID.randomUUID());
+        }
         List<NeedRequest> needRequests = getNeedRequests();
         Optional<Integer> optionalIndex = needRequests.stream()
                 .filter(needRequest1 -> needRequest1.getUuid().equals(needRequest.getUuid()))

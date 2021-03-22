@@ -44,9 +44,6 @@ public class Volunteer {
 
     }
 
-    public UUID getUuid() {
-    return uuid;
-  }
 
   @Override
     public String toString() {
@@ -124,5 +121,13 @@ public class Volunteer {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 }
