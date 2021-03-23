@@ -20,7 +20,7 @@ public interface DB {
 
     List<Volunteer> getVolunteers();
 
-    Volunteer getVolunteer(String email);
+    Optional<Volunteer> getVolunteer(String email);
 
     Optional<Volunteer> getVolunteer(UUID uuid);
 

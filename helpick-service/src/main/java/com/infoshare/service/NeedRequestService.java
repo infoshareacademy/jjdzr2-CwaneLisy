@@ -25,7 +25,7 @@ public class NeedRequestService {
     DB db;
 
     @Autowired
-    public NeedRequestService(@Qualifier("RelationalDb") DB db) { this.db = db; }
+    public NeedRequestService(@Qualifier("SpringDataDb") DB db) { this.db = db; }
 
     public List<NeedRequestListObject> getRequestFilteredList(NeedRequestFilterForm needRequestFilterForm) {
         List<NeedRequestListObject> needRequestListObjects = db.getNeedRequests().stream()

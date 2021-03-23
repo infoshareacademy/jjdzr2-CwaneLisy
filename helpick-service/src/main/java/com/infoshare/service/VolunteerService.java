@@ -24,7 +24,7 @@ public class VolunteerService {
     DB db;
 
     @Autowired
-    public VolunteerService(@Qualifier ("RelationalDb") DB db) {
+    public VolunteerService(@Qualifier ("SpringDataDb") DB db) {
         this.db = db;
     }
 
@@ -81,7 +81,7 @@ public class VolunteerService {
                 .collect(Collectors.toList());
     }
 
-    public Volunteer searchForVolunteer(String email) {
+    public Optional<Volunteer> searchForVolunteer(String email) {
         return db.getVolunteer(email);
     }
 
@@ -98,7 +98,7 @@ public class VolunteerService {
     public boolean registerNewVolunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
                                         boolean availability) {
         Volunteer newVolunteer = new Volunteer(name, location, email, phone, typeOfHelp, availability);
-        if (db.getVolunteer(newVolunteer.getEmail()) == null) {
+        if (db.getVolunteer(newVolunteer.getEmail()).isEmpty()){
             db.saveVolunteer(newVolunteer);
             return true;
         } else {

@@ -124,7 +124,7 @@ public class FileDb implements DB {
     }
 
     @Override
-    public Volunteer getVolunteer(String email) {
+    public Optional<Volunteer> getVolunteer(String email) {
 
         try {
             try (Scanner scanner = new Scanner(new File(VOLUNTEER_DB_FILE_NAME))) {
@@ -133,16 +133,16 @@ public class FileDb implements DB {
                     String line = scanner.nextLine();
                     String[] volunteerAtributes = line.split(",");
                     if (volunteerAtributes.length >= 6 && volunteerAtributes[2].equalsIgnoreCase(email)) {
-                        return new Volunteer(volunteerAtributes[0], volunteerAtributes[1], volunteerAtributes[2],
+                        return Optional.of(new Volunteer(volunteerAtributes[0], volunteerAtributes[1], volunteerAtributes[2],
                                 volunteerAtributes[3], TypeOfHelp.valueOf(volunteerAtributes[4]),
-                                Boolean.parseBoolean(volunteerAtributes[5]), UUID.fromString(volunteerAtributes[6]));
+                                Boolean.parseBoolean(volunteerAtributes[5]), UUID.fromString(volunteerAtributes[6]))) ;
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

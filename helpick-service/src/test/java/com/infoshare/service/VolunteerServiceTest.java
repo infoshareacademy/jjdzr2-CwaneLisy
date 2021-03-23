@@ -33,7 +33,7 @@ class VolunteerServiceTest {
     public void ifNewVolunteerRegisteredWithEmailAlreadyUsedInDb(){
         //Given
         Volunteer volunteerInDb = new Volunteer( "Janko","Gdansk", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true, UUID.randomUUID());
-        when(db.getVolunteer("janko@gmail.com")).thenReturn(volunteerInDb);
+        when(db.getVolunteer("janko@gmail.com")).thenReturn(Optional.of(volunteerInDb));
         //When
         boolean isNewVolunteerRegistered = volunteerService.registerNewVolunteer("Anna", "Warszawa", "janko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true);
         //Then

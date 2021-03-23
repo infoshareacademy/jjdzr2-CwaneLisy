@@ -49,9 +49,10 @@ public class RelationalDb implements DB {
     public List<Volunteer> getVolunteers() {
         return (List<Volunteer>) volunteerDao.findAll();
     }
+
     @Override
-    public Volunteer getVolunteer(String email) {
-        return volunteerDao.getVolunteer(email);
+    public Optional<Volunteer> getVolunteer(String email) {
+        return Optional.ofNullable(volunteerDao.getVolunteer(email));
     }
 
     @Override
