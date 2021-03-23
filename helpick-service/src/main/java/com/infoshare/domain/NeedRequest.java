@@ -1,6 +1,7 @@
 package com.infoshare.domain;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,14 +15,14 @@ public class NeedRequest {
     @Enumerated(EnumType.STRING)
     private HelpStatuses helpStatus;
     private Date statusChange;
-    @OneToOne
+    @OneToOne (cascade = {CascadeType.ALL})
     private PersonInNeed personInNeed;
+
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(columnDefinition = "CHAR(36)")
     private UUID uuid;
 
     public NeedRequest(TypeOfHelp typeOfHelp, HelpStatuses helpStatus, Date statusChange, PersonInNeed personInNeed, UUID uuid){
@@ -89,7 +90,6 @@ public class NeedRequest {
         return "NeedRequest{" + "typeOfHelp=" + typeOfHelp + ", helpStatus=" + helpStatus + ", statusChange="
                 + statusChange + ", personInNeed=" + personInNeed + '}';
     }
-
 
     @Override
     public boolean equals(Object o) {

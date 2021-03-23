@@ -18,8 +18,6 @@ public class VolunteerDao extends GenericDao<Volunteer> {
         catch (NoResultException noResultException){
             return null;
         }
-
-
     }
 
 }

@@ -121,7 +121,7 @@ public class VolunteerService {
             volunteerToEdit.setTypeOfHelp(typeOfHelp);
             volunteerToEdit.setAvailable(availability);
             volunteerToEdit.setEmail(email);
-            db.saveVolunteer(volunteerToEdit);
+            db.updateVolunteer(volunteerToEdit);
             return true;
         } else {
             return false;

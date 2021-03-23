@@ -26,9 +26,7 @@ public class GenericDao<T> implements Dao<T> {
 
     @Override
     public T find(UUID id) {
-        T obj = entityManager.find(type, id);
-        entityManager.persist(obj);
-        return obj;
+       return entityManager.find(type, id);
     }
 
     @Override

@@ -1,10 +1,11 @@
 package com.infoshare.domain;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.UUID;
-
 
 @Entity
 public class Volunteer {
@@ -17,11 +18,10 @@ public class Volunteer {
     private TypeOfHelp typeOfHelp;
     private boolean isAvailable;
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GeneratedValue(generator = "uuid4")
+    @GenericGenerator(name = "UUID", strategy = "uuid4")
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(columnDefinition = "CHAR(36)")
     private UUID uuid;
 
     public Volunteer(String name, String location, String email, String phone, TypeOfHelp typeOfHelp,
@@ -43,7 +43,6 @@ public class Volunteer {
     public Volunteer() {
 
     }
-
 
   @Override
     public String toString() {

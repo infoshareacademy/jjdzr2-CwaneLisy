@@ -51,7 +51,7 @@ class VolunteerServiceTest {
        //Then
        assertThat(isEditionSuccessful).isTrue();
        verify(db,times(1)).getVolunteer(testUuid);
-       verify(db, times(1)).saveVolunteer(new Volunteer("Franko","Gdansk", "franko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true, testUuid));
+       verify(db, times(1)).updateVolunteer(new Volunteer("Franko","Gdansk", "franko@gmail.com", "123654789", TypeOfHelp.SHOPPING, true, testUuid));
    }
 
    @Test

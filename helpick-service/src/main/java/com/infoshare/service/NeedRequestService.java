@@ -25,7 +25,7 @@ public class NeedRequestService {
     DB db;
 
     @Autowired
-    public NeedRequestService(@Qualifier("FileDb") DB db) { this.db = db; }
+    public NeedRequestService(@Qualifier("RelationalDb") DB db) { this.db = db; }
 
     public List<NeedRequestListObject> getRequestFilteredList(NeedRequestFilterForm needRequestFilterForm) {
         List<NeedRequestListObject> needRequestListObjects = db.getNeedRequests().stream()
@@ -62,20 +62,13 @@ public class NeedRequestService {
     }
 
     public void changeRequestStatus(List<NeedRequest> filteredList, int choice) {
-        List<NeedRequest> activeNeedRequests = db.getNeedRequests();
         NeedRequest changedRequest = filteredList.get(choice - 1);
         changedRequest.setHelpStatus(HelpStatuses.INPROGRESS);
         changedRequest.setStatusChange(new Date());
-        for (int i = 0; i < activeNeedRequests.size(); i++) {
-            if (activeNeedRequests.get(i).getUuid().equals(changedRequest.getUuid())) {
-                activeNeedRequests.set(i, changedRequest);
-            }
-        }
-        db.saveUpdatedNeedRequest(activeNeedRequests);
+        db.updateNeedRequest(changedRequest);
     }
 
     public void restoreStatusForExpiredRequests() {
-        boolean hasListChanged = false;
         List<NeedRequest> activeNeedRequests = db.getNeedRequests();
         for (NeedRequest request : activeNeedRequests) {
             Date time1 = request.getStatusChange();
@@ -84,15 +77,12 @@ public class NeedRequestService {
             long minutes = TimeUnit.MILLISECONDS.toMinutes(diff);
             if (request.getHelpStatus().equals(HelpStatuses.INPROGRESS) &&
                     minutes > 1440) {
-                hasListChanged = true;
                 log.info("Found difference > 24h in request " + request.getUuid() + ", changing status...");
                 request.setHelpStatus(HelpStatuses.NEW);
                 request.setStatusChange(new Date());
                 log.info("Status of request ID " + request.getUuid() + " restored to NEW");
+                db.updateNeedRequest(request);
             }
-        }
-        if (hasListChanged) {
-            db.saveUpdatedNeedRequest(activeNeedRequests);
         }
     }
 

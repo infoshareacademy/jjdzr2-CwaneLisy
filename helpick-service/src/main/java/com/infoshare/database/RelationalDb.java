@@ -26,6 +26,21 @@ public class RelationalDb implements DB {
     }
 
     @Override
+    public void saveNeedRequest(NeedRequest needRequest) {
+        needRequestDao.save(needRequest);
+    }
+
+    @Override
+    public List<NeedRequest> getNeedRequests() {
+        return (List<NeedRequest>) needRequestDao.findAll();
+    }
+
+    @Override
+    public void updateNeedRequest(NeedRequest needRequest){
+        needRequestDao.update(needRequest);
+    }
+
+    @Override
     public void saveVolunteer(Volunteer volunteer) {
         volunteerDao.save(volunteer);
     }
@@ -34,30 +49,18 @@ public class RelationalDb implements DB {
     public List<Volunteer> getVolunteers() {
         return (List<Volunteer>) volunteerDao.findAll();
     }
-
-    @Override
-    public void saveNeedRequest(NeedRequest needRequest) {
-
-    }
-
-    @Override
-    public void saveUpdatedNeedRequest(List<NeedRequest> needRequestList) {
-
-    }
-
-    @Override
-    public List<NeedRequest> getNeedRequests() {
-        return null;
-    }
-
     @Override
     public Volunteer getVolunteer(String email) {
-
         return volunteerDao.getVolunteer(email);
     }
 
     @Override
     public Optional<Volunteer> getVolunteer(UUID uuid) {
         return Optional.ofNullable(volunteerDao.find(uuid));
+    }
+
+    @Override
+    public void updateVolunteer(Volunteer volunteer) {
+        volunteerDao.update(volunteer);
     }
 }

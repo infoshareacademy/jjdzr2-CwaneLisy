@@ -78,27 +78,6 @@ public class FileDb implements DB {
         saveNeedRequestList(needRequests);
     }
 
-    private void saveNeedRequestList(List<NeedRequest> needRequests) {
-        try {
-            try (FileWriter fileWriter = new FileWriter(REQUEST_DB_FILE, false)) {
-                for (NeedRequest needRequest : needRequests) {
-                    PersonInNeed person = needRequest.getPersonInNeed();
-                    fileWriter.write(needRequest.getTypeOfHelp() + "," + needRequest.getHelpStatus() + "," + df
-                            .format(needRequest.getStatusChange()) + ",");
-                    fileWriter.write(person.getName() + "," + person.getLocation() + "," + person.getPhone() +
-                            "," + needRequest.getUuid() + "\n");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void saveUpdatedNeedRequest(List<NeedRequest> needRequestList) {
-        saveNeedRequestList(needRequestList);
-    }
-
     @Override
     public List<NeedRequest> getNeedRequests() {
 
@@ -119,6 +98,11 @@ public class FileDb implements DB {
         }
         return result;
     }
+
+    @Override
+    public void updateNeedRequest(NeedRequest needRequest){
+        saveNeedRequest(needRequest);
+    };
 
     @Override
     public List<Volunteer> getVolunteers() {
@@ -168,6 +152,11 @@ public class FileDb implements DB {
                 .findFirst();
     }
 
+    @Override
+    public void updateVolunteer(Volunteer volunteer) {
+        saveVolunteer(volunteer);
+    }
+
     private void saveVolunteers(List<Volunteer> volunteers)
     {
         try {
@@ -180,6 +169,22 @@ public class FileDb implements DB {
                             v.getTypeOfHelp() + "," +
                             v.isAvailable() + "," +
                             v.getUuid() + "\n");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveNeedRequestList(List<NeedRequest> needRequests) {
+        try {
+            try (FileWriter fileWriter = new FileWriter(REQUEST_DB_FILE, false)) {
+                for (NeedRequest needRequest : needRequests) {
+                    PersonInNeed person = needRequest.getPersonInNeed();
+                    fileWriter.write(needRequest.getTypeOfHelp() + "," + needRequest.getHelpStatus() + "," + df
+                            .format(needRequest.getStatusChange()) + ",");
+                    fileWriter.write(person.getName() + "," + person.getLocation() + "," + person.getPhone() +
+                            "," + needRequest.getUuid() + "\n");
                 }
             }
         } catch (IOException e) {
