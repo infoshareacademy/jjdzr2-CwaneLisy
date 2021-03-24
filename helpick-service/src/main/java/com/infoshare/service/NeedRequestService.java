@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class NeedRequestService {
+public class NeedRequestService extends NeedRequestSubject{
 
     DB db;
 
@@ -52,6 +52,7 @@ public class NeedRequestService {
             needRequest.getPersonInNeed().setPhone(phone);
             needRequest.setTypeOfHelp(typeOfHelp);
             db.saveNeedRequest(needRequest);
+
         }
     }
 
@@ -59,6 +60,7 @@ public class NeedRequestService {
         PersonInNeed personInNeed = new PersonInNeed(name, location, phone);
         NeedRequest needRequest = NeedRequest.create(typeOfHelp, personInNeed);
         db.saveNeedRequest(needRequest);
+        notify(EventType.add, needRequest);
     }
 
     public void changeRequestStatus(List<NeedRequest> filteredList, int choice) {
