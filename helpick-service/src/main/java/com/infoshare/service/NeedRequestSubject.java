@@ -16,9 +16,7 @@ public abstract class NeedRequestSubject {
     }
 
     public void detach(NeedRequestObserver needRequestObserver){
-        if(observers.contains(needRequestObserver)){
-            observers.remove(needRequestObserver);
-        }
+        observers.remove(needRequestObserver);
     }
 
     protected void notify(EventType eventType, NeedRequest needRequest){
