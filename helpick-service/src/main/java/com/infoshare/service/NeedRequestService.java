@@ -7,8 +7,10 @@ import com.infoshare.domain.PersonInNeed;
 import com.infoshare.domain.TypeOfHelp;
 import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.dto.NeedRequestListObject;
+import com.infoshare.event.NeedRequestEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +24,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NeedRequestService {
 
-    DB db;
+    private final DB db;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public NeedRequestService(@Qualifier("SpringDataDb") DB db) { this.db = db; }
@@ -52,6 +57,7 @@ public class NeedRequestService {
             needRequest.getPersonInNeed().setPhone(phone);
             needRequest.setTypeOfHelp(typeOfHelp);
             db.saveNeedRequest(needRequest);
+            applicationEventPublisher.publishEvent(new NeedRequestEvent(EventType.ADD, needRequest));
         }
     }
 
@@ -59,6 +65,7 @@ public class NeedRequestService {
         PersonInNeed personInNeed = new PersonInNeed(name, location, phone);
         NeedRequest needRequest = NeedRequest.create(typeOfHelp, personInNeed);
         db.saveNeedRequest(needRequest);
+        applicationEventPublisher.publishEvent(new NeedRequestEvent(EventType.ADD, needRequest));
     }
 
     public void changeRequestStatus(List<NeedRequest> filteredList, int choice) {
