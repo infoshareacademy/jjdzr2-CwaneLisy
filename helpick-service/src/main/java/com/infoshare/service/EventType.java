@@ -4,14 +4,13 @@ public enum EventType {
     add ("ADD"),
     update ("UPDATE");
 
-    public String eventType;
+    public String type;
 
-    EventType(String eventType) {
-        this.eventType = eventType;
+    EventType(String type) {
+        this.type = type;
     }
 
     public String getEventType() {
-        return eventType;
+        return type;
     }
-
 }
