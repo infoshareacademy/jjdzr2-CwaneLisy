@@ -14,9 +14,10 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class NeedRequestEventListener {
 
+    private static final String EMAIL_SUBJECT = "New person in need registered in your location!";
+
     private final MailService mailService;
     private final VolunteerService volunteerService;
-    private static final String EMAIL_SUBJECT = "New person in need registered in your location!";
 
     public NeedRequestEventListener(MailService mailService, VolunteerService volunteerService) {
         this.mailService = mailService;
@@ -25,7 +26,7 @@ public class NeedRequestEventListener {
 
     @EventListener
     public void update(NeedRequestEvent needRequestEvent) {
-        if (needRequestEvent.getEventType().equals(EventType.add)) {
+        if (needRequestEvent.getEventType().equals(EventType.ADD)) {
             List<Volunteer> volunteersToNotify = volunteerService.getVolunteerFilteredList(needRequestEvent.getNeedRequest().getPersonInNeed().getLocation(), needRequestEvent.getNeedRequest().getTypeOfHelp());
             String[] emails = volunteersToNotify.stream()
                     .map(Volunteer::getEmail)

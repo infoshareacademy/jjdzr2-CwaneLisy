@@ -57,7 +57,7 @@ public class NeedRequestService {
             needRequest.getPersonInNeed().setPhone(phone);
             needRequest.setTypeOfHelp(typeOfHelp);
             db.saveNeedRequest(needRequest);
-            applicationEventPublisher.publishEvent(new NeedRequestEvent(EventType.add, needRequest));
+            applicationEventPublisher.publishEvent(new NeedRequestEvent(EventType.ADD, needRequest));
         }
     }
 
@@ -65,7 +65,7 @@ public class NeedRequestService {
         PersonInNeed personInNeed = new PersonInNeed(name, location, phone);
         NeedRequest needRequest = NeedRequest.create(typeOfHelp, personInNeed);
         db.saveNeedRequest(needRequest);
-        applicationEventPublisher.publishEvent(new NeedRequestEvent(EventType.add, needRequest));
+        applicationEventPublisher.publishEvent(new NeedRequestEvent(EventType.ADD, needRequest));
     }
 
     public void changeRequestStatus(List<NeedRequest> filteredList, int choice) {

@@ -1,8 +1,8 @@
 package com.infoshare.service;
 
 public enum EventType {
-    add ("ADD"),
-    update ("UPDATE");
+    ADD("ADD"),
+    UPDATE("UPDATE");
 
     public String type;
 
