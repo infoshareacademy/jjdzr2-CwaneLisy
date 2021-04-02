@@ -15,9 +15,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/login","/").permitAll()
-                .antMatchers("/css/**").permitAll()
+                .antMatchers("/css/**", "/templates/**").permitAll()
                 .antMatchers("/form").hasRole("USER")
-                .antMatchers("/list").hasRole("USER")
+                .antMatchers("/volunteer/**").hasRole("USER")
+                .antMatchers("/need-request/**").hasRole("USER")
+                .antMatchers("/volunteer/**").hasRole("ADMIN")
+                .antMatchers("/need-request/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().defaultSuccessUrl("/list")
@@ -31,15 +34,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception{
         auth.inMemoryAuthentication()
                 .withUser("User")
-                .password("{bcrypt}$2y$12$6I3PgkTabk1KIbzHWWMKu.6DY3ARBYiNBFQPCYNFmaaaXC7pW5XDm")
+                .password("{noop}user")
                 .roles("USER")
                 .and()
                 .withUser("Admin")
-                .password("{bcrypt}$2y$12$KoHmPW6s4TQPVIiYMTzb2ODfvwMhEueHYLO1o2WoRVQRw68NIxZb6")
+                .password("{noop}admin")
                 .roles("ADMIN");
     }
-
-
-
-
 }
