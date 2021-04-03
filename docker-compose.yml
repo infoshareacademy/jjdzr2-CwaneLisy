@@ -16,5 +16,15 @@ services:
     ports:
       - "3306:3306"
 
+  spring-rest-api:
+    image: reporting
+    container_name: reporting
+    restart: always
+    build:
+      context: ./reporting
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+
 volumes:
   db_data:

@@ -13,6 +13,7 @@
         <module>consoleApp</module>
         <module>webApp</module>
         <module>helpick-service</module>
+        <module>reporting</module>
     </modules>
     <properties>
         <java.version>11</java.version>
