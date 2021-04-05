@@ -57,7 +57,7 @@
                         <div class="left-col col-lg-6 d-flex align-items-center justify-content-between">
                             <div class="need-request-title d-flex align-items-center">
                                 <div class="text">
-                                    <a th:href="@{/need-request/view/{id}(id=${needRequest.uuid})}" class="header-link">
+                                    <a class="header-link">
                                         <h3 class="h4" th:text="${needRequest.name}"></h3>
                                     </a>
                                     <small th:text="${needRequest.location}"></small>
@@ -86,8 +86,7 @@
                                 </div>
                                 <div class=" comments">
                                     <i class="fa fa-comment-o"></i>
-                                    <a th:href="@{/need-request/view/{id}#comments(id=${needRequest.uuid})}"
-                                       class="table-link"
+                                    <a class="table-link"
                                        data-toggle="tooltip" data-placement="top" th:title="#{tooltip.add}">20</a>
                                 </div>
                             </div>
