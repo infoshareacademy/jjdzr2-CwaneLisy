@@ -12,7 +12,7 @@ public class DateController {
 
     @GetMapping
     public ResponseDTO receiveDataFromHelpick(HelloDTO helloDTO){
-        return new ResponseDTO(helloDTO.getWelcomeMessage() + "MAGDA");
+        return new ResponseDTO(helloDTO.getWelcomeMessage() + " Eloooo MAGDA");
     }
 
 

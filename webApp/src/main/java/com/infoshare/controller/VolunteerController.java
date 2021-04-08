@@ -1,5 +1,6 @@
 package com.infoshare.controller;
 
+import com.infoshare.DTO.VolunteerSearchDTO;
 import com.infoshare.dto.VolunteerFilterForm;
 import com.infoshare.formobjects.VolunteerForm;
 import com.infoshare.service.VolunteerService;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
@@ -55,6 +57,12 @@ public class VolunteerController {
     @PostMapping("/filtering")
     public String filtering(@ModelAttribute("volunteerFilterForm") VolunteerFilterForm form,
                             RedirectAttributes redirectAttributes) {
+
+
+        final String uri = "http://localhost:8081/volunteer";
+        RestTemplate restTemplate = new RestTemplate();
+        String result = restTemplate.postForObject(uri, new VolunteerSearchDTO(form.getFreeText(), form.getLocation(), form.isAvailable()), String.class);
+
         redirectAttributes.addAllAttributes(volunteerFilteringService.createFilteringRedirectAttributes(form));
         return "redirect:/volunteer/all";
     }
@@ -100,7 +108,6 @@ public class VolunteerController {
     private String processFormWithErrors(RedirectAttributes redirectAttributes,
                                          Map<String, String> requestValues,
                                          Map<String, ?> errorRelatedEntries) {
-
         errorRelatedEntries.entrySet().stream()
                 .forEach(stringEntry -> redirectAttributes.addFlashAttribute(stringEntry.getKey(), stringEntry.getValue()));
         redirectAttributes.addAllAttributes(volunteerFilteringService.filterAttributes(requestValues));
