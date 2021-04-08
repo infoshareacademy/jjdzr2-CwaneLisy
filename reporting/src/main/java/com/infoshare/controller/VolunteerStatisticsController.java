@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/volunteer")
-public class VolunteerFilterController {
+@RequestMapping("/volunteerSearchStats")
+public class VolunteerStatisticsController {
 
 //    private final ReportingService reportingService;
 //

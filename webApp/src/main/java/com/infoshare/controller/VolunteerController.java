@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("volunteer")
@@ -58,10 +59,10 @@ public class VolunteerController {
     public String filtering(@ModelAttribute("volunteerFilterForm") VolunteerFilterForm form,
                             RedirectAttributes redirectAttributes) {
 
-
-        final String uri = "http://localhost:8081/volunteer";
+        final String uri = "http://localhost:8081/volunteerSearchStats";
         RestTemplate restTemplate = new RestTemplate();
-        String result = restTemplate.postForObject(uri, new VolunteerSearchDTO(form.getFreeText(), form.getLocation(), form.isAvailable()), String.class);
+        restTemplate.postForObject(uri, new VolunteerSearchDTO(form.getFreeText(), form.getLocation(),
+                form.getTypeOfHelps().stream().map(Object::toString).collect(Collectors.toList())), String.class);
 
         redirectAttributes.addAllAttributes(volunteerFilteringService.createFilteringRedirectAttributes(form));
         return "redirect:/volunteer/all";

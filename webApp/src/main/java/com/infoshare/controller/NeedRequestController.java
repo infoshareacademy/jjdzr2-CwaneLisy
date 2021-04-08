@@ -1,5 +1,7 @@
 package com.infoshare.controller;
 
+import com.infoshare.DTO.NeedRequestSearchDTO;
+import com.infoshare.DTO.VolunteerSearchDTO;
 import com.infoshare.dto.NeedRequestFilterForm;
 import com.infoshare.formobjects.NeedRequestForm;
 import com.infoshare.service.NeedRequestService;
@@ -9,11 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("need-request")
@@ -58,6 +62,14 @@ public class NeedRequestController {
     @PostMapping("/filtering")
     public String filtering(@ModelAttribute(FILTER_FORM_ATTR) NeedRequestFilterForm form,
                             RedirectAttributes redirectAttributes) {
+
+        final String uri = "http://localhost:8081/needRequestSearchStats";
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.postForObject(uri, new NeedRequestSearchDTO(form.getFreeText(), form.getStartDate(), form.getEndDate(),
+                form.getTypeOfHelps().stream().map(Object::toString).collect(Collectors.toList()),
+                form.getHelpStatuses().stream().map(Object::toString).collect(Collectors.toList()),
+                form.getLocation()), String.class);
+
         redirectAttributes.addAllAttributes(needRequestFilteringService.createFilteringRedirectAttributes(form));
         return REDIRECT_NEED_REQUEST_ALL;
     }

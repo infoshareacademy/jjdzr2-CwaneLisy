@@ -1,20 +1,22 @@
 package com.infoshare.DTO;
 
+import java.util.List;
+
 public class VolunteerSearchDTO {
 
     private String freeText;
     private String location;
-    private boolean isAvailable;
-
+    private List<String> helpTypes;
 
     public VolunteerSearchDTO(){
 
     }
 
-    public VolunteerSearchDTO(String freeText, String location, boolean isAvailable) {
+
+    public VolunteerSearchDTO(String freeText, String location, List<String> helpTypes) {
         this.freeText = freeText;
         this.location = location;
-        this.isAvailable = isAvailable;
+        this.helpTypes = helpTypes;
     }
 
     public String getFreeText() {
@@ -33,11 +35,11 @@ public class VolunteerSearchDTO {
         this.location = location;
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public List<String> getHelpTypes() {
+        return helpTypes;
     }
 
-    public void setAvailable(boolean available) {
-        isAvailable = available;
+    public void setHelpTypes(List<String> helpTypes) {
+        this.helpTypes = helpTypes;
     }
 }
