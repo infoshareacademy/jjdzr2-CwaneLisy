@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -68,7 +69,7 @@ public class NeedRequestController {
         restTemplate.postForObject(uri, new NeedRequestSearchDTO(form.getFreeText(), form.getStartDate(), form.getEndDate(),
                 form.getTypeOfHelps().stream().map(Object::toString).collect(Collectors.toList()),
                 form.getHelpStatuses().stream().map(Object::toString).collect(Collectors.toList()),
-                form.getLocation()), String.class);
+                form.getLocation(), LocalDate.now()), String.class);
 
         redirectAttributes.addAllAttributes(needRequestFilteringService.createFilteringRedirectAttributes(form));
         return REDIRECT_NEED_REQUEST_ALL;

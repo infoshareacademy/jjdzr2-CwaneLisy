@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public class VolunteerController {
         final String uri = "http://localhost:8081/volunteerSearchStats";
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.postForObject(uri, new VolunteerSearchDTO(form.getFreeText(), form.getLocation(),
-                form.getTypeOfHelps().stream().map(Object::toString).collect(Collectors.toList())), String.class);
+                form.getTypeOfHelps().stream().map(Object::toString).collect(Collectors.toList()), LocalDate.now()), String.class);
 
         redirectAttributes.addAllAttributes(volunteerFilteringService.createFilteringRedirectAttributes(form));
         return "redirect:/volunteer/all";

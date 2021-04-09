@@ -16,18 +16,21 @@ public class NeedRequestSearchDTO {
     private List<String> typeOfHelps;
     private List<String> helpStatuses;
     private String location;
+    private LocalDate searchDate;
+
 
     public NeedRequestSearchDTO(){
 
     }
 
-    public NeedRequestSearchDTO(String freeText, LocalDate startDate, LocalDate endDate, List<String> typeOfHelps, List<String> helpStatuses, String location) {
+    public NeedRequestSearchDTO(String freeText, LocalDate startDate, LocalDate endDate, List<String> typeOfHelps, List<String> helpStatuses, String location, LocalDate searchDate) {
         this.freeText = freeText;
         this.startDate = startDate;
         this.endDate = endDate;
         this.typeOfHelps = typeOfHelps;
         this.helpStatuses = helpStatuses;
         this.location = location;
+        this.searchDate = searchDate;
     }
 
     public String getFreeText() {
@@ -76,5 +79,13 @@ public class NeedRequestSearchDTO {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public LocalDate getSearchDate() {
+        return searchDate;
+    }
+
+    public void setSearchDate(LocalDate searchDate) {
+        this.searchDate = searchDate;
     }
 }
