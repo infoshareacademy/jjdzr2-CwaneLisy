@@ -14,7 +14,7 @@ public class VolunteerSearchDTO {
     private LocalDate searchDate;
 
 
-    public VolunteerSearchDTO(){
+    public VolunteerSearchDTO() {
 
     }
 

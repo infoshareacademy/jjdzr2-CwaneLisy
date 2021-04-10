@@ -2,6 +2,7 @@ package com.infoshare.functions;
 
 import com.infoshare.DTO.VolunteerSearchDTO;
 import com.infoshare.domain.VolunteerStatistics;
+
 import java.util.function.Function;
 
 public class VolunteerFunctions {

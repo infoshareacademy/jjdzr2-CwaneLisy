@@ -1,5 +1,6 @@
 package com.infoshare.domain;
 
+import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Entity
+@Data
 public class VolunteerStatistics {
 
     @Id

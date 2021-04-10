@@ -32,7 +32,7 @@ public class NeedRequestStatistics {
     @Column(nullable = false)
     private LocalDate searchDate;
 
-    public NeedRequestStatistics(){
+    public NeedRequestStatistics() {
 
     }
 

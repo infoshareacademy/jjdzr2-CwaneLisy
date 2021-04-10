@@ -1,9 +1,7 @@
 package com.infoshare.functions;
 
 import com.infoshare.DTO.NeedRequestSearchDTO;
-import com.infoshare.DTO.VolunteerSearchDTO;
 import com.infoshare.domain.NeedRequestStatistics;
-import com.infoshare.domain.VolunteerStatistics;
 
 import java.util.function.Function;
 
@@ -14,6 +12,4 @@ public class NeedRequestFunctions {
             NeedRequestSearchDTO.getLocation(),
             NeedRequestSearchDTO.getSearchDate()
     );
-
-
 }

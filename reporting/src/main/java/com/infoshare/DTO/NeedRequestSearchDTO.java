@@ -20,7 +20,7 @@ public class NeedRequestSearchDTO {
     private LocalDate searchDate;
 
 
-    public NeedRequestSearchDTO(){
+    public NeedRequestSearchDTO() {
 
     }
 

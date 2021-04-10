@@ -1,11 +1,10 @@
 package com.infoshare.controller;
 
-
-import com.infoshare.DTO.HelloDTO;
-import com.infoshare.DTO.ResponseDTO;
-import com.infoshare.DTO.VolunteerSearchDTO;
+import com.infoshare.DTO.*;
 import com.infoshare.service.ReportingService;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/volunteerSearchStats")
@@ -17,19 +16,14 @@ public class VolunteerStatisticsController {
         this.reportingService = reportingService;
     }
 
-
-    @GetMapping
-    public ResponseDTO receiveDataFromHelpick(HelloDTO helloDTO){
-        return new ResponseDTO(helloDTO.getWelcomeMessage() + " MAGDA");
+    @GetMapping("totalCount/{year}/{month}/{day}")
+    public SearchCountDTO getSearchCountByDate(@PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        return reportingService.getVolunteerSearchCountByDate(LocalDate.of(year, month, day));
     }
-
 
     @PostMapping
-    public String receiveData(@RequestBody VolunteerSearchDTO filterForm){
-        reportingService.add(filterForm);
+    public String receiveData(@RequestBody VolunteerSearchDTO searchDTO) {
+        reportingService.add(searchDTO);
         return "OK";
     }
-
-
-
 }
