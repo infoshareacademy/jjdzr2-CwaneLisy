@@ -1,5 +1,7 @@
 package com.infoshare.DTO;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -8,6 +10,7 @@ public class VolunteerSearchDTO {
     private String freeText;
     private String location;
     private List<String> helpTypes;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate searchDate;
 
 

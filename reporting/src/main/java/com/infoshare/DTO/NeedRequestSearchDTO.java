@@ -16,6 +16,7 @@ public class NeedRequestSearchDTO {
     private List<String> typeOfHelps;
     private List<String> helpStatuses;
     private String location;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate searchDate;
 
 

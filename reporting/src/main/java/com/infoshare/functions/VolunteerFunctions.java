@@ -12,7 +12,7 @@ public class VolunteerFunctions {
             VolunteerSearchDTO.getSearchDate()
     );
 
-    public static final Function<VolunteerStatistics, VolunteerSearchDTO> StatisticsToSearchDTO = VolunteerStatistics -> new VolunteerSearchDTO(
+    public static final Function<VolunteerStatistics, VolunteerSearchDTO> statisticsToSearchDTO = VolunteerStatistics -> new VolunteerSearchDTO(
             VolunteerStatistics.getFreeText(),
             VolunteerStatistics.getLocation(),
             null,
