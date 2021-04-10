@@ -37,6 +37,10 @@ public class VolunteerStatistics {
         this.searchDate = searchDate;
     }
 
+    public VolunteerStatistics() {
+
+    }
+
     public UUID getUuid() {
         return uuid;
     }
